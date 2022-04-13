@@ -1,2 +1,2 @@
-# RTLab
+# OfflineRTLab
 Render images with offline ray tracing
