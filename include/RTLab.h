@@ -66,8 +66,8 @@ private:
 //	hittable_list world;
 	shared_ptr<scene> m_scene;
 
-	int max_depth = 300;
-	int samples_per_pixel = 600;
+	int max_depth = 50;
+	int samples_per_pixel = 200;
 	color background = color(0, 0, 0);
 
 	// 225 600
