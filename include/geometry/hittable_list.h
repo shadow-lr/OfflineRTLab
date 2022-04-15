@@ -8,7 +8,7 @@
 using std::shared_ptr;
 using std::make_shared;
 
-/* hitable_list是所有能够被光线撞击的物体的列表集合*/
+// hittable_list is the list set of all objects that can be hit by ray
 class hittable_list : public hittable {
 public:
     hittable_list() {}

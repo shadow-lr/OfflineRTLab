@@ -23,33 +23,39 @@ const double infinity = std::numeric_limits<double>::infinity();
 
 // Utility Functions
 
-inline double degrees_to_radians(double degrees) {
-    return degrees * PI / 180.0;
+inline double degrees_to_radians(double degrees)
+{
+	return degrees * PI / 180.0;
 }
 
-inline double random_double() {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    static std::mt19937 generator;
-    return distribution(generator);
+inline double random_double()
+{
+	static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+	static std::mt19937 generator;
+	return distribution(generator);
 }
 
-inline std::pair<double, double> random_point2d() {
-    return std::make_pair(random_double(), random_double());
+inline std::pair<double, double> random_point2d()
+{
+	return std::make_pair(random_double(), random_double());
 }
 
 // return a random value in the interval between min value and max value
-inline double random_double(double min, double max) {
-    return min + (max - min) * random_double();
+inline double random_double(double min, double max)
+{
+	return min + (max - min) * random_double();
 }
 
-inline double clamp(double x, double min, double max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
+inline double clamp(double x, double min, double max)
+{
+	if (x < min) return min;
+	if (x > max) return max;
+	return x;
 }
 
-inline int random_int(int min, int max) {
-    return static_cast<int>(random_double(min, max + 1));
+inline int random_int(int min, int max)
+{
+	return static_cast<int>(random_double(min, max + 1));
 }
 
 // Common Headers

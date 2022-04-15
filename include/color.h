@@ -5,10 +5,11 @@
 
 #include <iostream>
 
-static void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
-    double r = pixel_color.x();
-    double g = pixel_color.y();
-    double b = pixel_color.z();
+static void write_color(std::ostream &out, color pixel_color, int samples_per_pixel)
+{
+	double r = pixel_color.x();
+	double g = pixel_color.y();
+	double b = pixel_color.z();
 
     // Divide the color by the number of samples
     // pixel_color
@@ -23,9 +24,9 @@ static void write_color(std::ostream &out, color pixel_color, int samples_per_pi
         << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << '\n';
 }
 
-static void write_color_table(color pixel_color, int samples_per_pixel, std::vector<std::vector<color>> &color_table,
-                       int height, int width) {
-    double r = pixel_color.x();
+static void write_color_table(color pixel_color, int samples_per_pixel, std::vector<std::vector<color>> &color_table, int height, int width)
+{
+	double r = pixel_color.x();
     double g = pixel_color.y();
     double b = pixel_color.z();
 
@@ -45,9 +46,10 @@ static void write_color_table(color pixel_color, int samples_per_pixel, std::vec
     color_table[height][width].e[2] = 256 * clamp(b, 0.001, 0.999);
 }
 
-static void out_color_table(std::ostream &out, std::vector<std::vector<color>> &color_table, int height, int width) {
-    out << static_cast<int>(color_table[height][width].e[0]) << ' '
-        << static_cast<int>(color_table[height][width].e[1]) << ' '
-        << static_cast<int>(color_table[height][width].e[2]) << '\n';
+static void out_color_table(std::ostream &out, std::vector<std::vector<color>> &color_table, int height, int width)
+{
+	out << static_cast<int>(color_table[height][width].e[0]) << ' '
+		<< static_cast<int>(color_table[height][width].e[1]) << ' '
+		<< static_cast<int>(color_table[height][width].e[2]) << '\n';
 }
 

@@ -6,11 +6,10 @@ class camera {
 public:
 
     camera() = default;
-
 	// vfov : vertical field-of-view in degrees
 
-    // focus_dist : 焦距
-    // aperture : 光圈直径
+    // focus_dist : Focal distance
+    // aperture : Aperture diameter
     camera(point3 lookfrom, point3 lookat, vec3 vup,
            double vfov, double aspect_ratio, double aperture,
            double focus_dist, double _time0 = 0, double _time1 = 0)

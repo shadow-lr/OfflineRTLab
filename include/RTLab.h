@@ -11,11 +11,11 @@
 #include "geometry/bvh.h"
 #include "geometry/pdf.h"
 
-#include "shape/sphere.h"
-#include "shape/aarect.h"
-#include "shape/box.h"
-#include "shape/moving_sphere.h"
-#include "shape/constant_medium.h"
+#include "shape/procedural/sphere.h"
+#include "shape/procedural/aarect.h"
+#include "shape/procedural/box.h"
+#include "shape/procedural/moving_sphere.h"
+#include "shape/procedural/constant_medium.h"
 
 #include "asset/material.h"
 #include "asset/camera.h"
@@ -33,10 +33,12 @@
 #include <fstream>
 #include <chrono>
 
-class RTLab final {
+class RTLab final
+{
 public:
 	RTLab() {}
-	RTLab(window_extent extent_) {
+	RTLab(window_extent extent_)
+	{
 		color_table.resize(GetExtent().height + 1);
 		for (auto &tab : color_table)
 			tab.resize(GetExtent().width + 1);

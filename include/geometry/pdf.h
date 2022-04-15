@@ -1,6 +1,6 @@
 #pragma once
 
-#include "obn.h"
+#include "onb.h"
 #include "math/vec3.h"
 #include "geometry/hittable.h"
 

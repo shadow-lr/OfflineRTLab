@@ -25,9 +25,9 @@ public:
 	// n is w axis
 	void build_from_w(const vec3 &n)
 	{
-		build_from_w_normal(n);
+//		build_from_w_normal(n);
 //		build_from_w_hughes_moller(n);
-//		build_from_w_frisvad(n);
+		build_from_w_frisvad(n);
 	}
 
 	void build_from_w_normal(const vec3& n)

@@ -1,6 +1,7 @@
 #include "geometry/rotate.h"
 
-rotate_y::rotate_y(shared_ptr<hittable> p, double angle) : ptr(p) {
+rotate_y::rotate_y(shared_ptr<hittable> p, double angle) : ptr(p)
+{
 	auto radians = degrees_to_radians(angle);
 	sin_theta = sin(radians);
 	cos_theta = cos(radians);
@@ -10,9 +11,12 @@ rotate_y::rotate_y(shared_ptr<hittable> p, double angle) : ptr(p) {
 	point3 max(-infinity, -infinity, -infinity);
 
 	// traversal eight point
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 2; j++) {
-			for (int k = 0; k < 2; k++) {
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			for (int k = 0; k < 2; k++)
+			{
 				auto x = i * bbox.max().x() + (1 - i) * bbox.min().x();
 				auto y = j * bbox.max().y() + (1 - j) * bbox.min().y();
 				auto z = k * bbox.max().z() + (1 - k) * bbox.min().z();
@@ -23,7 +27,8 @@ rotate_y::rotate_y(shared_ptr<hittable> p, double angle) : ptr(p) {
 				// only rotate y-axis
 				vec3 tester(newx, y, newz);
 
-				for (int c = 0; c < 3; c++) {
+				for (int c = 0; c < 3; c++)
+				{
 					min[c] = std::fmin(min[c], tester[c]);
 					max[c] = std::fmax(max[c], tester[c]);
 				}
@@ -34,7 +39,8 @@ rotate_y::rotate_y(shared_ptr<hittable> p, double angle) : ptr(p) {
 	bbox = aabb(min, max);
 }
 
-bool rotate_y::hit(const ray &r, double t_min, double t_max, hit_record &rec) const {
+bool rotate_y::hit(const ray &r, double t_min, double t_max, hit_record &rec) const
+{
 	auto origin = r.origin();
 	auto direction = r.direction();
 

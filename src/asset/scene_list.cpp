@@ -1,12 +1,23 @@
-#include <asset/material.h>
-#include <shape/box.h>
-#include <geometry/translate.h>
-#include <geometry/rotate.h>
-#include <shape/sphere.h>
-#include <asset/light.h>
 #include "asset/scene_list.h"
+#include "asset/material.h"
+#include "asset/light.h"
+#include "asset/scene.h"
 
-scene scene_list::cornell_box() {
+#include "geometry/translate.h"
+#include "geometry/rotate.h"
+
+#include "shape/procedural/box.h"
+#include "shape/procedural/sphere.h"
+#include "shape/procedural/aarect.h"
+
+using shape::procedural::box;
+using shape::procedural::sphere;
+using shape::procedural::xy_rect;
+using shape::procedural::yz_rect;
+using shape::procedural::xz_rect;
+
+scene scene_list::cornell_box()
+{
 	// objects
 	hittable_list objects;
 

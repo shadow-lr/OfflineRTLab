@@ -2,11 +2,12 @@
 
 #include "rtweekend.h"
 
-class perlin {
+class perlin
+{
 public:
-    perlin();
+	perlin();
 
-    // 获得噪声
+    // Get noise
     double noise(const point3 &p) const;
     // Turbulence(a composite noise that has multiple summed frequencies is used)
     double turb(const point3& p, int depth = 7) const;
@@ -29,6 +30,6 @@ private:
 
     static double perlin_interp(vec3 c[2][2][2], double u, double v, double w);
 
-    // 洗牌算法
+    // Shuffle Algorithm
     static void permute(int *p, int n);
 };

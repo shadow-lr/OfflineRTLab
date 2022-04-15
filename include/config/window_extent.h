@@ -1,6 +1,7 @@
 #pragma once
 
-struct window_extent {
+struct window_extent
+{
 	int width, height;
 	window_extent() {}
 	window_extent(int width_, int height_) : width(width_), height(height_) {}

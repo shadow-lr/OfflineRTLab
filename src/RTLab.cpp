@@ -25,8 +25,9 @@ color RTLab::ray_color(const ray &r,
 			* ray_color(srec.specular_ray, background, world, lights, depth - 1);
 	}
 
-	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
-	mixture_pdf p(light_ptr, srec.pdf_ptr);
+//	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
+//	mixture_pdf p(light_ptr, srec.pdf_ptr);
+	cosine_pdf p(rec.normal);
 
 	ray scattered = ray(rec.p, p.generate(), r.time());
 	auto pdf_val = p.value(scattered.direction());
@@ -71,7 +72,6 @@ void RTLab::output_color(std::ostream &out, std::vector<std::vector<color>> &col
 
 void RTLab::Render()
 {
-
 	auto &extent = GetExtent();
 
 	color_table.resize(GetExtent().height + 1);
