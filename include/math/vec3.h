@@ -32,13 +32,13 @@ public:
 	vec3& operator*=(const double t) { e[0] *= t; e[1] *= t; e[2] *= t; return *this; }
 	vec3& operator/=(const double t) { return *this *= 1 / t; }
 
-    double length() const {return sqrt(length_squared());}
+	double length() const { return sqrt(length_squared()); }
 
-    double length_squared() const {return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];}
+	double length_squared() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
 
-    inline static vec3 random() {return vec3(random_double(), random_double(), random_double());}
+	inline static vec3 random() { return vec3(random_double(), random_double(), random_double()); }
 
-    inline static vec3 random(double min, double max) {return vec3(random_double(min, max), random_double(min, max), random_double(min, max));}
+	inline static vec3 random(double min, double max) {return vec3(random_double(min, max), random_double(min, max), random_double(min, max));}
 
 	bool near_zero() const
 	{
@@ -99,7 +99,7 @@ inline vec3 Max(const vec3& l, const vec3& r) { return { std::max(l.x(), r.x()),
 inline vec3 Min(const vec3& l, const vec3& r) { return { std::min(l.x(), r.x()), std::min(l.y(), r.y()), std::min(l.z(), r.z()) }; }
 
 // Get normlized vector
-inline vec3 unit_vector(vec3 v)
+inline vec3 normalize(vec3 v)
 {
 	return v / v.length();
 }
@@ -140,7 +140,7 @@ inline vec3 random_to_sphere(double radius, double distance_squared) {
 
 static vec3 random_unit_vector()
 {
-	return unit_vector(random_in_unit_sphere());
+	return normalize(random_in_unit_sphere());
 }
 
 // Randomly select a point from the hemisphere
@@ -170,7 +170,7 @@ static vec3 random_cosine_direction()
 // Randomly select a point from the disk
 static vec3 random_in_unit_disk()
 {
-	auto&[r1, r2] = random_point2d();
+	auto [r1, r2] = random_point2d();
 
 	double theta = r1;
 	double phi = r2 * TWO_PI;

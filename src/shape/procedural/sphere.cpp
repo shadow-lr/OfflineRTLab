@@ -60,9 +60,9 @@ namespace shape::procedural
 		return 1 / solid_angle;
 	}
 
-	vec3 sphere::random(const point3 &o) const
+	vec3 sphere::random(const point3 &origin) const
 	{
-		vec3 direction = center - o;
+		vec3 direction = center - origin;
 		auto distance_squared = direction.length_squared();
 		onb uvw;
 		uvw.build_from_w(direction);

@@ -12,13 +12,13 @@ bool lambertian::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 // scattering pdf
 double lambertian::scattering_pdf(const ray& r_in, const hit_record& rec, const ray& scattered) const
 {
-	auto cosine = dot(rec.normal, unit_vector(scattered.direction()));
+	auto cosine = dot(rec.normal, normalize(scattered.direction()));
 	return cosine < 0 ? 0 : cosine * INV_PI;
 }
 
 bool metal::scatter(const ray& r_in, const hit_record& rec, scatter_record& srec) const
 {
-	vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+	vec3 reflected = reflect(normalize(r_in.direction()), rec.normal);
 	srec.specular_ray = ray(rec.p, reflected+fuzz*random_in_unit_sphere(), r_in.time());
 	srec.attenuation = albedo;
 	srec.is_specular = true;
@@ -33,7 +33,7 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 	srec.attenuation= color(1.0, 1.0, 1.0);
 	double refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
 
-	vec3 unit_direction = unit_vector(r_in.direction());
+	vec3 unit_direction = normalize(r_in.direction());
 
 	// dot(v, n) = cos(θ)
 	double cos_theta = std::fmin(dot(-unit_direction, rec.normal), 1.0);

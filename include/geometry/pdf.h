@@ -22,7 +22,7 @@ public:
 
 	virtual double value(const vec3 &direction) const override
 	{
-		auto cosine = dot(unit_vector(direction), uvw.w());
+		auto cosine = dot(normalize(direction), uvw.w());
 		return (cosine <= 0) ? 0 : cosine * INV_PI;
 	}
 

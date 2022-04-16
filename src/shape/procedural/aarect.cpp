@@ -70,7 +70,7 @@ namespace shape::procedural
 		if (!this->hit(ray(o, v), 0.001, infinity, rec))
 			return 0;
 
-		auto normalize_v = unit_vector(v);
+		auto normalize_v = normalize(v);
 		auto area = (x1 - x0) * (z1 - z0);
 		//	auto distance_squared = (rec.p - o).length_squared();
 		auto distance_squared = rec.t * rec.t * v.length_squared();

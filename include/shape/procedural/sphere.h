@@ -25,8 +25,8 @@ namespace shape::procedural
 			v = theta * INV_PI;
 		}
 
-		virtual double pdf_value(const point3 &o, const vec3 &v) const override;
-		virtual vec3 random(const point3 &o) const override;
+		virtual double pdf_value(const point3 &origin, const vec3 &v) const override;
+		virtual vec3 random(const point3 &origin) const override;
 
 	public:
 		point3 center;

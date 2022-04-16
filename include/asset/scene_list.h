@@ -2,7 +2,8 @@
 
 class scene;
 
-class scene_list {
+class scene_list
+{
 public:
 	static scene cornell_box();
 };

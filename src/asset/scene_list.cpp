@@ -9,12 +9,15 @@
 #include "shape/procedural/box.h"
 #include "shape/procedural/sphere.h"
 #include "shape/procedural/aarect.h"
+#include "shape/model/triangle.h"
 
 using shape::procedural::box;
 using shape::procedural::sphere;
 using shape::procedural::xy_rect;
 using shape::procedural::yz_rect;
 using shape::procedural::xz_rect;
+
+using shape::model::triangle;
 
 scene scene_list::cornell_box()
 {
@@ -47,6 +50,9 @@ scene scene_list::cornell_box()
 	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
 	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
 	objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
+
+//	shared_ptr<hittable> triangle = make_shared<shape::model::triangle>(point3(190, 120, 190), point3(190, 140, 190), point3(190, 140, 220), green);
+//	objects.add(triangle);
 
 	// lights
 	hittable_list lights;

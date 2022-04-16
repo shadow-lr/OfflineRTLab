@@ -32,10 +32,10 @@ public:
 
 	void build_from_w_normal(const vec3& n)
 	{
-		axis[2] = unit_vector(n);
+		axis[2] = normalize(n);
 		vec3 a = (std::fabs(w().x()) > 0.999) ? vec3(0, 1, 0) : vec3(1, 0, 0);
 		// n a
-		axis[1] = unit_vector(cross(w(), a));
+		axis[1] = normalize(cross(w(), a));
 		axis[0] = cross(w(), v());
 	}
 
@@ -43,17 +43,17 @@ public:
 	// Hughes and Möller 1999
 	void build_from_w_hughes_moller(const vec3 &n)
 	{
-		axis[2] = unit_vector(n);
+		axis[2] = normalize(n);
 		if (std::abs(w().x()) > std::abs(w().z()))
 		{
-			axis[1] = unit_vector(vec3(-w().y(), w().x(), 0.0));
+			axis[1] = normalize(vec3(-w().y(), w().x(), 0.0));
 			double length = std::sqrt(1.0 - w().z() * w().z());
 			double r = 1.0 / length;
 			axis[1] = vec3(-w().y() * r, w().x() * r, 0.0);
 		}
 		else
 		{
-			axis[1] = unit_vector(vec3(0.0, -w().z(), w().y()));
+			axis[1] = normalize(vec3(0.0, -w().z(), w().y()));
 			double length = std::sqrt(1.0 - w().x() * w().x());
 			double r = 1.0 / length;
 			axis[1] = vec3(0.0, -w().z() * r, w().y() * r);
@@ -68,7 +68,7 @@ public:
 	// Jeppe Revall Frisvad 2012
 	void build_from_w_frisvad(const vec3& n)
 	{
-		axis[2] = unit_vector(n);
+		axis[2] = normalize(n);
 		if (w().z() < -0.9999999f)
 		{
 			axis[0] = vec3(0.0, -1.0, 0.0);

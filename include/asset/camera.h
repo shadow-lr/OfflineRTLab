@@ -27,15 +27,15 @@ public:
 		double viewport_width = aspect_ratio * viewport_height;
 		double focal_length = 1.0;
 
-		w = unit_vector(lookfrom - lookat);
-		u = unit_vector(cross(vup, w));
+		w = normalize(lookfrom - lookat);
+		u = normalize(cross(vup, w));
 		v = cross(w, u);
 
 		origin = lookfrom;
 		horizontal = focus_dist * viewport_width * u;   // new version
 		vertical = focus_dist * viewport_height * v;    // new version
 		// lower_left_corner = origin - horizontal/2 - vertical/2 - w;
-		// origin = lookfrom,   origin - w ==>> lookfrom - unit_vector(lookfrom - lookat)
+		// origin = lookfrom,   origin - w ==>> lookfrom - normalize(lookfrom - lookat)
 		lower_left_corner = origin - horizontal / 2 - vertical / 2 - focus_dist * w;    // new version
 		lens_radius = aperture / 2;
 
