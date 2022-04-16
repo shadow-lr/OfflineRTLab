@@ -9,6 +9,7 @@ using std::sqrt;
 
 class vec2
 {
+public:
 	vec2() : e{0, 0} {}
 	vec2(double e0, double e1) : e{e0, e1} {}
 	vec2(double e0) : e{e0, e0} {}
@@ -19,6 +20,8 @@ class vec2
 	vec2 operator-() const { return vec2(-e[0], -e[1]); }
 	double operator[](int i) const { return e[i]; }
 	double &operator[](int i) { return e[i]; }
+
+	bool operator==(const vec2 &other) const { return e[0] == other.x() && e[1] == other.y(); }
 
 	vec2& operator+=(const vec2& v) { e[0] += v.e[0]; e[1] += v.e[1]; return *this; }
 	vec2& operator-=(const vec2& v) { e[0] -= v.e[0]; e[1] -= v.e[1]; return *this; }
@@ -59,6 +62,8 @@ public:
 	vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
     double operator[](int i) const { return e[i]; }
     double &operator[](int i) { return e[i]; }
+
+	bool operator==(const vec3 &other) const { return e[0] == other.x() && e[1] == other.y() && e[2] == other.z(); }
 
 	vec3& operator+=(const vec3& v) { e[0] += v.e[0]; e[1] += v.e[1]; e[2] += v.e[2]; return *this; }
 	vec3& operator-=(const vec3& v) { e[0] -= v.e[0]; e[1] -= v.e[1]; e[2] -= v.e[2]; return *this; }
