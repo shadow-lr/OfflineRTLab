@@ -2,6 +2,7 @@
 
 #include "geometry/hittable.h"
 #include "asset/material.h"
+#include "math/vertex.h"
 
 #include <string>
 
@@ -18,6 +19,8 @@ namespace shape::model
 		vec3 random(const vec3 &o) const override;
 		~mesh_triangle() override;
 	public:
-//		vec3[] verties;
+		std::vector<vertex> vertices;
+		std::vector<uint32_t> indices;
+
 	};
 }

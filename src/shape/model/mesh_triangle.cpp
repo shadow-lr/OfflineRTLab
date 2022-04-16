@@ -2,6 +2,11 @@
 
 namespace shape::model
 {
+	mesh_triangle::mesh_triangle(const std::string filename, shared_ptr<material> ptr)
+	{
+
+	}
+
 	bool mesh_triangle::hit(const ray &r, double t_min, double t_max, hit_record &rec) const
 	{
 		return false;
