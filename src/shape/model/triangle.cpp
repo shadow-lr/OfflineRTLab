@@ -42,6 +42,9 @@ namespace shape::model
 		u *= invDet;
 		v *= invDet;
 
+		if (tnear < t_min || tnear > t_max)
+			return false;
+
 		rec.t = tnear;
 		rec.u = u;
 		rec.v = v;

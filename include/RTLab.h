@@ -60,18 +60,12 @@ public:
 	const window_extent &GetExtent() const { return m_scene->GetExtent(); }
 	const camera &GetCamera() const { return m_scene->GetCamera(); }
 
-public:
-	//	window_extent extent;
-//	camera m_camera;
-
 private:
-//	hittable_list world;
 	shared_ptr<scene> m_scene;
 
 	int max_depth = 50;
 	int samples_per_pixel = 200;
 	color background = color(0, 0, 0);
 
-	// 225 600
 	std::vector<std::vector<color>> color_table;
 };
