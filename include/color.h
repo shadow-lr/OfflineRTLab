@@ -4,6 +4,7 @@
 #include "rtweekend.h"
 
 #include <iostream>
+#include <opencv2/openv>
 
 static void write_color(std::ostream &out, color pixel_color, int samples_per_pixel)
 {

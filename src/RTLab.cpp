@@ -101,12 +101,12 @@ void RTLab::Render()
 		omp_unset_lock(&lock);
 	}
 
-	for (int j = extent.height - 1; j >= 0; --j) {
-		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
-		for (int i = 0; i < extent.width; ++i) {
-			out_color_table(std::cout, color_table, j, i);
-		}
-	}
+//	for (int j = extent.height - 1; j >= 0; --j) {
+//		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
+//		for (int i = 0; i < extent.width; ++i) {
+//			out_color_table(std::cout, color_table, j, i);
+//		}
+//	}
 
 	const auto stop = std::chrono::high_resolution_clock::now();
 	const auto elapsed = std::chrono::duration<float, std::chrono::seconds::period>(stop - start).count();

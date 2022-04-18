@@ -10,7 +10,7 @@
 
 namespace shape::model
 {
-	class mesh_triangle : hittable
+	class mesh_triangle : public hittable
 	{
 	public:
 		mesh_triangle(const std::string& filename, shared_ptr<material> ptr);

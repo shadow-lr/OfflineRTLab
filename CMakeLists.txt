@@ -1,4 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.5)
+set(VCPKG_TARGET_TRIPLET "x64-mingw-static" CACHE STRING "" FORCE)
 
 project(RTLab)
 option(GROUP_BY_EXPLORER ON)
@@ -30,6 +31,13 @@ if (OpenMP_FOUND)
     message("OpenMP FOUND")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
+find_package(OpenCV CONFIG REQUIRED)
+if (OpenCV_FOUND)
+    message("OpenCV FOUND")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenCV_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenCV_CXX_FLAGS}")
 endif()
 
 # 解决CLion + MSVC 下的字符编码问题

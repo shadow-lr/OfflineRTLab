@@ -106,7 +106,7 @@ namespace shape::model
 	void mesh_triangle::load_obj(const std::string &path, shared_ptr<material> mt)
 	{
 		objl::Loader loader;
-		if (loader.LoadFile(path))
+		if (!loader.LoadFile(path))
 		{
 			std::cout << "Cannot load obj :" << path.c_str() << "\n";
 			return;
