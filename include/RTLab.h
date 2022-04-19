@@ -42,14 +42,17 @@ public:
 		color_table.resize(GetExtent().height + 1);
 		for (auto &tab : color_table)
 			tab.resize(GetExtent().width + 1);
+		color_table_raw.resize(GetExtent().width * GetExtent().height);
 	}
 	RTLab(int width, int height) : RTLab(window_extent(width, height)) {}
 
 	// Render
 	void Render();
 	color ray_color(const ray &r, const color &background, const hittable &world, const hittable &lights, int depth);
-	void scan_calculate_color(int height, int width, color &background, int samples_per_pixel, hittable& lights);
-	void output_color(std::ostream &out, std::vector<std::vector<color>> &color_table, int height, int width);
+	void scan_calculate_color(int height, int width);
+	void output_color(std::ostream &out, std::vector<std::vector<color>> &color_table);
+
+	void write_color_table(color pixel_color, int height, int width);
 
 	// improve
 	void reset_scene(scene&& new_scene);
@@ -68,4 +71,6 @@ private:
 	color background = color(0, 0, 0);
 
 	std::vector<std::vector<color>> color_table;
+
+	std::vector<color> color_table_raw;
 };

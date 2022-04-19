@@ -65,15 +65,15 @@ namespace
 
 namespace shape::model
 {
-	mesh_triangle::mesh_triangle(const std::string& filename, shared_ptr<material> ptr)
+	mesh_triangle::mesh_triangle(const std::string& filename, shared_ptr<material> ptr, vec3 translate, vec3 scale)
 	{
-		load_obj(filename, ptr);
+		load_obj(filename, ptr, translate, scale);
 	}
 
 	bool mesh_triangle::hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const
 	{
 		bool intersect = false;
-		for (auto & tri : triangles)
+		for (auto &tri : triangles)
 		{
 			if (tri.hit(r_in, t_min, t_max, rec))
 			{
@@ -89,21 +89,11 @@ namespace shape::model
 		return false;
 	}
 
-	double mesh_triangle::pdf_value(const point3 &o, const vec3 &v) const
-	{
-		return hittable::pdf_value(o, v);
-	}
-
-	vec3 mesh_triangle::random(const vec3 &o) const
-	{
-		return hittable::random(o);
-	}
-
 	mesh_triangle::~mesh_triangle()
 	{
 	}
 
-	void mesh_triangle::load_obj(const std::string &path, shared_ptr<material> mt)
+	void mesh_triangle::load_obj(const std::string &path, shared_ptr<material> mt, vec3& translate, vec3& scale)
 	{
 		objl::Loader loader;
 		if (!loader.LoadFile(path))
@@ -114,6 +104,24 @@ namespace shape::model
 
 		assert(loader.LoadedMeshes.size() == 1);
 		auto mesh = loader.LoadedMeshes[0];
+
+		std::cout << "load obj :" << path.c_str() << "\n";
+
+		// model
+		/*  scale_x 0       0       x
+			0       scale_y 0       y
+			0       0       scale_z z
+			0       0       0       1
+		*/
+
+		std::array<double, 12> model;
+		model[0] = scale[0];
+		model[5] = scale[1];
+		model[10] = scale[2];
+
+		model[3] = translate[0];
+		model[7] = translate[1];
+		model[11] = translate[2];
 
 		vec3 min_vert = vec3(infinity, infinity, infinity);
 		vec3 max_vert = vec3(-infinity, -infinity, -infinity);
@@ -126,6 +134,14 @@ namespace shape::model
 				auto vert = vec3(mesh.Vertices[i + j].Position.X,
 								 mesh.Vertices[i + j].Position.Y,
 								 mesh.Vertices[i + j].Position.Z);
+
+				vert.e[0] *= model[0];
+				vert.e[1] *= model[5];
+				vert.e[2] *= model[10];
+
+				vert.e[0] += model[3];
+				vert.e[1] += model[7];
+				vert.e[2] += model[11];
 
 				face_vertices[j] = vert;
 				min_vert = vec3(std::min(min_vert.x(), vert.x()),

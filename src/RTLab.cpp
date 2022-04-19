@@ -1,4 +1,5 @@
 #include "RTLab.h"
+#include <opencv2/opencv.hpp>
 
 color RTLab::ray_color(const ray &r,
 					   const color &background,
@@ -43,7 +44,7 @@ void RTLab::reset_scene(scene&& new_scene)
 	m_scene = std::make_shared<scene>(std::move(new_scene));
 }
 
-void RTLab::scan_calculate_color(int height, int width, color &background, int samples_per_pixel, hittable &lights)
+void RTLab::scan_calculate_color(int height, int width)
 {
 	int i = width, j = height;
 	color pixel_color(0, 0, 0);
@@ -56,10 +57,10 @@ void RTLab::scan_calculate_color(int height, int width, color &background, int s
 		pixel_color += ray_color(r, background, GetWorld(), GetLights(), max_depth);
 	}
 	//    write_color(std::cout, pixel_color, samples_per_pixel);
-	write_color_table(pixel_color, samples_per_pixel, color_table, j, i);
+	write_color_table(pixel_color, j, i);
 }
 
-void RTLab::output_color(std::ostream &out, std::vector<std::vector<color>> &color_table, int height, int width)
+void RTLab::output_color(std::ostream &out, std::vector<std::vector<color>> &color_table)
 {
 	auto &extent = GetExtent();
 	for (int j = extent.height - 1; j >= 0; --j) {
@@ -78,6 +79,8 @@ void RTLab::Render()
 	for (auto &tab : color_table)
 		tab.resize(GetExtent().width + 1);
 
+	color_table_raw.resize(GetExtent().width * GetExtent().height);
+
 	// Render
 	std::cout << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
 
@@ -89,16 +92,34 @@ void RTLab::Render()
 
 	const auto start = std::chrono::high_resolution_clock::now();
 
+	int key = 0;
+
+	cv::Mat image(extent.width, extent.height, CV_8UC3);
+
 	#pragma omp parallel for
 	for (int j = extent.height - 1; j >= 0; --j) {
 		for (int i = 0; i < extent.width; ++i) {
-			scan_calculate_color(j, i, background, samples_per_pixel, const_cast<hittable_list&>(GetLights()));
+			scan_calculate_color(j, i);
 		}
 
-		omp_set_lock(&lock);
-		std::cerr << "\routput remaining: " << finish << ' ' << std::flush;
-		finish--;
-		omp_unset_lock(&lock);
+		#pragma omp critical
+		{
+			std::cerr << "\routput remaining: " << finish << ' ' << std::flush;
+			finish--;
+			if (key != 27)
+			{
+				cv::imshow("image", image);
+
+				// j i
+				for (int i = 0 ; i < extent.width ; ++i)
+				{
+					image.at<cv::Vec3b>(extent.height - j, i)[0] = color_table[j][i].e[0];
+					image.at<cv::Vec3b>(extent.height - j, i)[1] = color_table[j][i].e[1];
+					image.at<cv::Vec3b>(extent.height - j, i)[2] = color_table[j][i].e[2];
+				}
+				key = cv::waitKey(10);
+			}
+		}
 	}
 
 //	for (int j = extent.height - 1; j >= 0; --j) {
@@ -112,4 +133,31 @@ void RTLab::Render()
 	const auto elapsed = std::chrono::duration<float, std::chrono::seconds::period>(stop - start).count();
 
 	std::cerr << "\n" << "duration : " << elapsed << "s\tDone.\n";
+}
+
+void RTLab::write_color_table(color pixel_color, int height, int width)
+{
+	double r = pixel_color.x();
+	double g = pixel_color.y();
+	double b = pixel_color.z();
+
+	if (r != r) r = 0.0;
+	if (g != g) g = 0.0;
+	if (b != b) b = 0.0;
+
+	// Divide the color by the number of samples
+	// pixel_color
+	double scale = 1.0 / samples_per_pixel;
+	r = sqrt(scale * r);
+	g = sqrt(scale * g);
+	b = sqrt(scale * b);
+
+	color_table[height][width].e[0] = 256 * clamp(r, 0.001, 0.999);
+	color_table[height][width].e[1] = 256 * clamp(g, 0.001, 0.999);
+	color_table[height][width].e[2] = 256 * clamp(b, 0.001, 0.999);
+
+	color_table_raw[height * width + width].e[0] = color_table[height][width].e[0];
+	color_table_raw[height * width + width].e[1] = color_table[height][width].e[1];
+	color_table_raw[height * width + width].e[2] = color_table[height][width].e[2];
+
 }

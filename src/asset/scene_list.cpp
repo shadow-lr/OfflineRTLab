@@ -57,8 +57,9 @@ scene scene_list::cornell_box()
 //	shared_ptr<hittable> triangle = make_shared<shape::model::triangle>(point3(190, 120, 190), point3(190, 140, 190), point3(190, 140, 220), green);
 //	objects.add(triangle);
 
-//	shared_ptr<hittable> bunny = make_shared<shape::model::mesh_triangle>("assets/models/bunny.obj", green);
-//	objects.add(bunny);
+	shared_ptr<hittable> bunny =
+		make_shared<shape::model::mesh_triangle>("assets/models/bunny.obj", green, vec3(350.0, -50.0, 50.0), vec3(1500.0, 1500.0, 1500.0));
+	objects.add(bunny);
 
 	// lights
 	hittable_list lights;
