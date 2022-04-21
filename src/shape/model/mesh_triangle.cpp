@@ -72,21 +72,14 @@ namespace shape::model
 
 	bool mesh_triangle::hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const
 	{
-		bool intersect = false;
-		for (auto &tri : triangles)
-		{
-			if (tri.hit(r_in, t_min, t_max, rec))
-			{
-				intersect = true;
-			}
-		}
-		return intersect;
+		return bvh_tree.hit(r_in, t_min, t_max, rec);
 	}
 
+	// todo: check this
 	bool mesh_triangle::bounding_box(double time0, double time1, aabb &output_box) const
 	{
 		output_box = mesh_box;
-		return false;
+		return true;
 	}
 
 	mesh_triangle::~mesh_triangle()
@@ -113,6 +106,8 @@ namespace shape::model
 			0       0       scale_z z
 			0       0       0       1
 		*/
+
+		std::vector<shared_ptr<hittable>> list;
 
 		std::array<double, 12> model;
 		model[0] = scale[0];
@@ -151,15 +146,21 @@ namespace shape::model
 								std::max(max_vert.y(), vert.y()),
 								std::max(max_vert.z(), vert.z()));
 
-				triangles.emplace_back(triangle(face_vertices[0], face_vertices[1],
-												face_vertices[2], mt));
+				shared_ptr<triangle> tt = std::make_shared<triangle>(triangle(face_vertices[0], face_vertices[1],
+															  face_vertices[2], mt));
+				triangles.emplace_back(tt);
+				list.push_back(tt);
 			}
 		}
 
 		mesh_box = aabb(min_vert, max_vert);
 
-		for (auto &tri : triangles)
-			area += tri.get_area();
+//		mesh_box.tostring();
+
+//		for (auto &tri : triangles)
+//			area += tri.get_area();
+
+		bvh_tree = bvh_node(list, 0, list.size() - 1, 0, 0);
 	}
 }
 

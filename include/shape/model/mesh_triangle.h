@@ -1,5 +1,6 @@
 #pragma once
 
+#include "geometry/bvh.h"
 #include "geometry/hittable.h"
 #include "geometry/aabb.h"
 #include "asset/material.h"
@@ -7,6 +8,7 @@
 #include "shape/model/triangle.h"
 
 #include <string>
+#include <memory>
 
 namespace shape::model
 {
@@ -21,12 +23,12 @@ namespace shape::model
 
 		void load_obj(const std::string& path, shared_ptr<material> mt, vec3& translate, vec3& scale);
 	public:
-		std::vector<vertex> vertices;
-		std::vector<uint32_t> indices;
-		std::vector<triangle> triangles;
-
+//		std::vector<vertex> vertices;
+//		std::vector<uint32_t> indices;
+		std::vector<shared_ptr<triangle>> triangles;
 		aabb mesh_box;
-
 		double area;
+
+		bvh_node bvh_tree;
 	};
 }

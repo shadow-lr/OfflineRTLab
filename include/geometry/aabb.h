@@ -13,6 +13,14 @@ public:
 
 	bool hit(const ray &r, double t_min, double t_max) const;
 
+	void tostring() const
+	{
+		printf("minimum: ");
+		minimum.tostring();
+		printf("maximum: ");
+		maximum.tostring();
+	}
+
 public:
 	point3 minimum;
 	point3 maximum;

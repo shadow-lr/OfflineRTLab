@@ -90,6 +90,11 @@ public:
 		return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
 	}
 
+	void tostring() const
+	{
+		printf("x:%f, y:%f, z:%f\n", e[0], e[1], e[2]);
+	}
+
 public:
 	double e[3];
 };
@@ -247,3 +252,20 @@ static vec3 refract(const vec3 &uv, const vec3 &n, double etai_over_etat)
 	return r_out_perp + r_out_parallel;
 }
 
+// the fast inverse square root implementation from Quake III Arena,
+static double Q_rsqrt(double number)
+{
+	long i;
+	double x2, y;
+	const float threehalfs = 1.5F;
+
+	x2 = number * 0.5F;
+	y = number;
+	i = *(long *)&y;                       // evil floating point bit level hacking
+	i = 0x5f3759df - (i >> 1);               // what the fuck?
+	y = *(float *)&i;
+	y = y * (threehalfs - (x2 * y * y));   // 1st iteration
+	//	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+	return y;
+}
