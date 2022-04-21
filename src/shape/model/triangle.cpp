@@ -128,9 +128,9 @@ namespace shape::model
 		min_y = min_compare(v0.y(), v1.y(), v2.y());
 		min_z = min_compare(v0.z(), v1.z(), v2.z());
 
-		max_x = max_compare(v0.x(), v1.x(), v2.x());
-		max_y = max_compare(v0.y(), v1.y(), v2.y());
-		max_z = max_compare(v0.z(), v1.z(), v2.z());
+		max_x = max_compare(v0.x(), v1.x(), v2.x()) + 0.1;
+		max_y = max_compare(v0.y(), v1.y(), v2.y()) + 0.1;
+		max_z = max_compare(v0.z(), v1.z(), v2.z()) + 0.1;
 
 		vec3 min_point(min_x, min_y, min_z);
 		vec3 max_point(max_x, max_y, max_z);

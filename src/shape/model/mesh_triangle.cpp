@@ -7,67 +7,12 @@
 #include <cassert>
 #include <array>
 
-namespace
-{
-	//from boost (functional/hash):
-	//see http://www.boost.org/doc/libs/1_35_0/doc/html/hash/combine.html
-	template <typename T>
-	inline void hash_combine(std::size_t& seed, const T& val){
-		seed ^= std::hash<T>()(val) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-	}
-
-	//auxiliary generic functions to create a hash value using a seed
-	template <typename T>
-	inline void hash_val(std::size_t& seed, const T& val){
-		hash_combine(seed, val);
-	}
-	template <typename T, typename... Types>
-	inline void hash_val(std::size_t& seed, const T& val, const Types&... args){
-		hash_combine(seed, val);
-		hash_val(seed, args...);
-	}
-
-	//auxialiary generic function to create a has value out of a heterogeneous list of arguments
-	template <typename... Types>
-	inline std::size_t hash_val(const Types&... args){
-		std::size_t seed = 0;
-		hash_val(seed, args...);
-		return seed;
-	}
-
-	class Hasher {
-	public:
-		size_t operator()(const vertex& v) const {
-			//calculate hash here.
-			return hash_val(
-				v.pos.x(), v.pos.y(), v.pos.z(),
-				v.normal.x(), v.normal.y(), v.normal.z(),
-				v.tex_coord.x(), v.tex_coord.y());
-		}
-	};
-	class Equal
-	{
-	public:
-		bool operator()(const vertex &v1, const vertex &v2) const
-		{
-			bool rtval = false;
-			for (int i = 0; i < 3; ++i)
-			{
-				rtval |= (v1.pos[i] == v2.pos[i]);
-				rtval |= (v1.normal[i] == v2.normal[i]);
-				if (i < 2)
-					rtval |= (v1.tex_coord[i] == v2.tex_coord[i]);
-			}
-			return rtval;
-		}
-	};
-}
-
 namespace shape::model
 {
 	mesh_triangle::mesh_triangle(const std::string& filename, shared_ptr<material> ptr, vec3 translate, vec3 scale)
 	{
-		load_obj(filename, ptr, translate, scale);
+//		load_obj(filename, ptr, translate, scale);
+		load_tiny_obj(filename, ptr, translate, scale);
 	}
 
 	bool mesh_triangle::hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const
@@ -78,7 +23,13 @@ namespace shape::model
 	// todo: check this
 	bool mesh_triangle::bounding_box(double time0, double time1, aabb &output_box) const
 	{
-		output_box = mesh_box;
+		aabb temp;
+		for (int i = 0 ; i < triangles.size() ; ++i)
+		{
+			triangles[i]->bounding_box(0, 0, temp);
+			output_box = surrounding_box(output_box, temp);
+		}
+
 		return true;
 	}
 
@@ -153,14 +104,107 @@ namespace shape::model
 			}
 		}
 
-		mesh_box = aabb(min_vert, max_vert);
-
-//		mesh_box.tostring();
+//		mesh_box = aabb(min_vert, max_vert);
 
 //		for (auto &tri : triangles)
 //			area += tri.get_area();
 
-		bvh_tree = bvh_node(list, 0, list.size() - 1, 0, 0);
+		bvh_tree = bvh_node(list, 0, 0);
+	}
+
+	void mesh_triangle::load_tiny_obj(const std::string &path, shared_ptr<material> mt, vec3 translate, vec3 scale)
+	{
+		tinyobj::attrib_t attrib;
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+
+		std::string warn, err;
+		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
+		{
+			std::cout << "Cannot load Mesh " <<  path.c_str() << "\n";
+			throw std::runtime_error(warn + err);
+		}
+
+//		if (!warn.empty())
+//			std::cout << "WARN: " << warn << std::endl;
+//
+		std::vector<shared_ptr<hittable>> list;
+
+		for (size_t i = 0; i < shapes.size(); ++i)
+		{
+			size_t index_offset = 0;
+
+			assert(shapes[i].mesh.num_face_vertices.size() == shapes[i].mesh.material_ids.size());
+			assert(shapes[i].mesh.num_face_vertices.size() == shapes[i].mesh.smoothing_group_ids.size());
+
+			for (size_t f = 0; f < shapes[i].mesh.num_face_vertices.size(); f++)
+			{
+				size_t fnum = shapes[i].mesh.num_face_vertices[f];
+
+				vertex vertices[3];
+
+				for (size_t v = 0; v < fnum; v++)
+				{
+					tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
+
+					vec3 pos = vec3(static_cast<float>(attrib.vertices[idx.vertex_index * 3]),
+									static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 1]),
+									static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 2]));
+
+
+					pos.e[0] *= scale[0];
+					pos.e[1] *= scale[1];
+					pos.e[2] *= scale[2];
+
+					pos.e[0] += translate[0];
+					pos.e[1] += translate[1];
+					pos.e[2] += translate[2];
+
+					vertices[v].pos = pos;
+				}
+
+				for (size_t v = 0; v < fnum; v++)
+				{
+					tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
+					// todo: consider the cast of non-conforming scaling
+					if (idx.normal_index >= 0)
+					{
+						vertices[v].normal = normalize(vec3(static_cast<float>(attrib.normals[idx.normal_index * 3]),
+														 static_cast<float>(attrib.normals[idx.normal_index * 3 + 1]),
+														 static_cast<float>(attrib.normals[idx.normal_index * 3 + 2])));
+					}
+					else
+					{
+						vertices[v].normal = normalize(cross(vertices[1].pos - vertices[0].pos,
+															vertices[2].pos - vertices[0].pos));
+					}
+
+					if (idx.normal_index >= 0)
+					{
+						// u
+						vertices[v].tex_coord.e[0] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 0]);
+						// v
+						vertices[v].tex_coord.e[1] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 1]);
+					}
+					for (int i = 0; i < 3; i++)
+					{
+						if (vertices[v].normal.e[i] == -0.0)
+							vertices[v].normal.e[i] = 0.0;
+					}
+				}
+
+				shared_ptr<triangle> tt = std::make_shared<triangle>(triangle(vertices[0], vertices[1], vertices[2], mt));
+
+				triangles.emplace_back(tt);
+				list.push_back(tt);
+
+				index_offset += fnum;
+			}
+		}
+
+		std::cout << "success load obj : " << path.c_str() << "\n";
+
+		bvh_tree = bvh_node(list, 0, 0);
 	}
 }
 

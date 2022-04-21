@@ -3,7 +3,6 @@
 #include "geometry/ray.h"
 #include "math/vec3.h"
 #include "rtweekend.h"
-#include "color.h"
 
 #include "geometry/hittable_list.h"
 #include "geometry/translate.h"
@@ -36,13 +35,13 @@
 class RTLab final
 {
 public:
-	RTLab() {}
+	RTLab() : RTLab(800, 600) {}
 	RTLab(window_extent extent_)
 	{
-		color_table.resize(GetExtent().height + 1);
+		color_table.resize(extent_.height + 1);
 		for (auto &tab : color_table)
-			tab.resize(GetExtent().width + 1);
-		color_table_raw.resize(GetExtent().width * GetExtent().height);
+			tab.resize(extent_.width + 1);
+		color_table_raw.resize(extent_.width * extent_.height);
 	}
 	RTLab(int width, int height) : RTLab(window_extent(width, height)) {}
 
@@ -50,9 +49,11 @@ public:
 	void Render();
 	color ray_color(const ray &r, const color &background, const hittable &world, const hittable &lights, int depth);
 	void scan_calculate_color(int height, int width);
-	void output_color(std::ostream &out, std::vector<std::vector<color>> &color_table);
 
 	void write_color_table(color pixel_color, int height, int width);
+
+	void resize_table();
+	void update_process(float progress, int finish_num, int all_num, int per_thread_num);
 
 	// improve
 	void reset_scene(scene&& new_scene);
@@ -66,11 +67,14 @@ public:
 private:
 	shared_ptr<scene> m_scene;
 
+	static const int thread_num = 12;
+	static int thread_finish_count[thread_num + 1];
+
+	// render
 	int max_depth = 50;
-	int samples_per_pixel = 200;
-	color background = color(0, 0, 0);
+	int samples_per_pixel = 50;
+	color background = color(0.3, 0.3, 0.3);
 
 	std::vector<std::vector<color>> color_table;
-
 	std::vector<color> color_table_raw;
 };

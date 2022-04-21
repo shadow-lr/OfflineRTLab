@@ -12,8 +12,8 @@ public:
 	scene(hittable_list &objects_, hittable_list &lights_, camera &cam_, window_extent &extent_);
 	scene(hittable_list &&objects_, hittable_list &&lights_, camera &&cam_, window_extent &&extent_);
 
-	const hittable_list &GetLights() const { return lights; }
 	const hittable_list &GetObjects() const { return objects; }
+	const hittable_list &GetLights() const { return lights; }
 	const camera &GetCamera() const { return cam; }
 	const window_extent &GetExtent() const { return extent; }
 

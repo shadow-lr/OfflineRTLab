@@ -1,6 +1,8 @@
 #include "RTLab.h"
 #include <opencv2/opencv.hpp>
 
+int RTLab::thread_finish_count[thread_num + 1] = {0};
+
 color RTLab::ray_color(const ray &r,
 					   const color &background,
 					   const hittable &world,
@@ -50,84 +52,96 @@ void RTLab::scan_calculate_color(int height, int width)
 	color pixel_color(0, 0, 0);
 	auto& extent = GetExtent();
 	auto& cam = GetCamera();
+
 	for (int s = 0; s < samples_per_pixel; ++s) {
 		double u = (i + random_double()) / (extent.width - 1.0);
 		double v = (j + random_double()) / (extent.height - 1.0);
 		ray r = cam.get_ray(u, v);
 		pixel_color += ray_color(r, background, GetWorld(), GetLights(), max_depth);
 	}
-	//    write_color(std::cout, pixel_color, samples_per_pixel);
 	write_color_table(pixel_color, j, i);
-}
-
-void RTLab::output_color(std::ostream &out, std::vector<std::vector<color>> &color_table)
-{
-	auto &extent = GetExtent();
-	for (int j = extent.height - 1; j >= 0; --j) {
-		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
-		for (int i = 0; i < extent.width; ++i) {
-			out_color_table(std::cout, color_table, j, i);
-		}
-	}
 }
 
 void RTLab::Render()
 {
 	auto &extent = GetExtent();
 
-	color_table.resize(GetExtent().height + 1);
-	for (auto &tab : color_table)
-		tab.resize(GetExtent().width + 1);
+	resize_table();
 
-	color_table_raw.resize(GetExtent().width * GetExtent().height);
-
-	// Render
-	std::cout << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
-
-	omp_set_num_threads(32);
-
-	int finish = extent.width - 1;
-	static omp_lock_t lock;
-	omp_init_lock(&lock);
-
+	omp_set_num_threads(thread_num);
 	const auto start = std::chrono::high_resolution_clock::now();
+	auto clock_start = std::chrono::system_clock::now();
+
+	int finish_num = 0;
+	int all_num = extent.height * extent.width;
+	int per_thread_num = all_num / thread_num;
+
+	// time interval to update the progress
+	float time_interval = 0.5;
 
 	int key = 0;
 
 	cv::Mat image(extent.width, extent.height, CV_8UC3);
 
 	#pragma omp parallel for
-	for (int j = extent.height - 1; j >= 0; --j) {
-		for (int i = 0; i < extent.width; ++i) {
+	for (int j = extent.height - 1; j >= 0; --j)
+	{
+		for (int i = 0; i < extent.width; ++i)
+		{
 			scan_calculate_color(j, i);
+
+			// process
+			thread_finish_count[omp_get_thread_num()] += 1;
+			#pragma omp critical
+			{
+				finish_num += 1;
+
+				auto clock_now = std::chrono::system_clock::now();
+				auto interval = std::chrono::duration_cast<std::chrono::seconds>(clock_now - clock_start).count();
+				if (interval >= time_interval)
+				{
+					update_process(finish_num / (float)all_num, finish_num, all_num, per_thread_num);
+					clock_start = clock_now;
+				}
+			}
 		}
 
 		#pragma omp critical
 		{
-			std::cerr << "\routput remaining: " << finish << ' ' << std::flush;
-			finish--;
 			if (key != 27)
 			{
-				cv::imshow("image", image);
+				cv::imshow("RTLab", image);
 
 				// j i
-				for (int i = 0 ; i < extent.width ; ++i)
+				for (int width = 0 ; width < extent.width ; ++width)
 				{
-					image.at<cv::Vec3b>(extent.height - j, i)[0] = color_table[j][i].e[0];
-					image.at<cv::Vec3b>(extent.height - j, i)[1] = color_table[j][i].e[1];
-					image.at<cv::Vec3b>(extent.height - j, i)[2] = color_table[j][i].e[2];
+					image.at<cv::Vec3b>(extent.height - j - 1, width)[0] = color_table[j][width].e[0];
+					image.at<cv::Vec3b>(extent.height - j - 1, width)[1] = color_table[j][width].e[1];
+					image.at<cv::Vec3b>(extent.height - j - 1, width)[2] = color_table[j][width].e[2];
 				}
 				key = cv::waitKey(10);
 			}
 		}
 	}
 
-//	for (int j = extent.height - 1; j >= 0; --j) {
-//		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
-//		for (int i = 0; i < extent.width; ++i) {
-//			out_color_table(std::cout, color_table, j, i);
-//		}
-//	}
+	std::ofstream filestream("image1.ppm");
+
+	// Render
+	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
+
+	for (int j = extent.height - 1; j >= 0; --j)
+	{
+		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
+		for (int i = 0; i < extent.width; ++i)
+		{
+			filestream
+				<< int(color_table[j][i].e[0]) << ' '
+				<< int(color_table[j][i].e[1]) << ' '
+				<< int(color_table[j][i].e[2]) << '\n';
+		}
+	}
+
+	filestream.close();
 
 	const auto stop = std::chrono::high_resolution_clock::now();
 	const auto elapsed = std::chrono::duration<float, std::chrono::seconds::period>(stop - start).count();
@@ -156,8 +170,61 @@ void RTLab::write_color_table(color pixel_color, int height, int width)
 	color_table[height][width].e[1] = 256 * clamp(g, 0.001, 0.999);
 	color_table[height][width].e[2] = 256 * clamp(b, 0.001, 0.999);
 
+	// use for opencv
 	color_table_raw[height * width + width].e[0] = color_table[height][width].e[0];
 	color_table_raw[height * width + width].e[1] = color_table[height][width].e[1];
 	color_table_raw[height * width + width].e[2] = color_table[height][width].e[2];
 
+}
+
+void RTLab::update_process(float progress, int finish_num, int all_num, int per_thread_num)
+{
+	system("cls");
+	printf("\n");
+	for (int i = 0; i < thread_num; ++i)
+	{
+		if (i % 4 == 0 && i != 0) printf("\n");
+
+		printf("%3d  [", i);
+		float curThreadProgress = thread_finish_count[i] / (float)per_thread_num;
+		int present = int(curThreadProgress * 100.0);
+		int per_present_flag = 10;
+		int flag_num = present / per_present_flag;
+
+		for (int j = 0; j < per_present_flag; ++j)
+		{
+			if (j < flag_num) printf("|");
+			else printf(" ");
+		}
+
+		printf("%-3.1f%%]", (fmin(curThreadProgress * 100.0, 100.0)));
+		printf("\t");
+	}
+	printf("\nAll  [");
+
+	int total_present = int(progress * 100.0);
+	int per_present_flag = 10;
+	int flag_num = total_present / per_present_flag;
+
+	for (int j = 0; j < per_present_flag; ++j)
+	{
+		if (j < flag_num) printf("|");
+		else printf(" ");
+	}
+
+	printf("%d/%d]", finish_num, all_num);
+	printf("\t");
+	printf("Tasks: %d; %d running", thread_num, omp_get_num_procs());
+
+	fflush(stdout);
+}
+
+void RTLab::resize_table()
+{
+	auto& extent = GetExtent();
+	color_table.resize(extent.height + 1);
+	for (auto &tab : color_table)
+		tab.resize(extent.width + 1);
+
+	color_table_raw.resize(extent.width * extent.height);
 }

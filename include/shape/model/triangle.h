@@ -46,9 +46,7 @@ namespace shape::model
 			vertices[0].pos = v0_;
 			vertices[1].pos = v1_;
 			vertices[2].pos = v2_;
-			vec3 e1 = v1_ - v0_;
-			vec3 e2 = v2_ - v0_;
-			vec3 normal = normalize(cross(e1, e2));
+			vec3 normal = normalize(cross(v2_ - v0_, v1_ - v0_));
 			vertices[0].normal = normal;
 			vertices[1].normal = normal;
 			vertices[2].normal = normal;
@@ -58,9 +56,8 @@ namespace shape::model
 		triangle(vertex& v0, vertex& v1, vertex& v2, shared_ptr<material> ptr = nullptr) : mat_ptr(ptr)
 		{
 			vertices[0] = v0;
-			vertices[1] = v0;
-			vertices[2] = v0;
-
+			vertices[1] = v1;
+			vertices[2] = v2;
 		}
 
 		bool hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const override;

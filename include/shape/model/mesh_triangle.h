@@ -22,11 +22,9 @@ namespace shape::model
 		~mesh_triangle() override;
 
 		void load_obj(const std::string& path, shared_ptr<material> mt, vec3& translate, vec3& scale);
+		void load_tiny_obj(const std::string& path, shared_ptr<material> mt, vec3 translate = {0.0}, vec3 scale = {1.0});
 	public:
-//		std::vector<vertex> vertices;
-//		std::vector<uint32_t> indices;
 		std::vector<shared_ptr<triangle>> triangles;
-		aabb mesh_box;
 		double area;
 
 		bvh_node bvh_tree;

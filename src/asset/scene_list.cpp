@@ -67,9 +67,6 @@ scene scene_list::cornell_box()
 	lights.add(make_shared<xz_rect>(213, 343, 227, 332, 554, shared_ptr<material>()));
 	lights.add(make_shared<sphere>(point3(190, 90, 190), 90, shared_ptr<material>()));
 
-	//lights->add(make_shared<xz_rect>(213, 343, 227, 332, 554, shared_ptr<material>()));
-	//lights->add(make_shared<sphere>(point3(190, 90, 190), 90, shared_ptr<material>()));
-
 	// camera(default Camera)
 	point3 lookfrom = point3(278, 278, -800);
 	point3 lookat = point3(278, 278, 0);
@@ -86,5 +83,27 @@ scene scene_list::cornell_box()
 
 	cam.reset(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
+}
+
+scene scene_list::test_scene()
+{
+	hittable_list objects;
+	hittable_list lights;
+
+	auto green = make_shared<lambertian>(color(.12, .45, .15));
+
+	shared_ptr<hittable> opera_house = make_shared<shape::model::mesh_triangle>("assets/models/opera-house.obj", green);
+	objects.add(opera_house);
+
+	lights.add(make_shared<box>(point3(-115, -115, -115), point3(-85, -85, -85), shared_ptr<material>()));
+	lights.add(make_shared<box>(point3(85, 85, -35), point3(115, 115, -5), shared_ptr<material>()));
+
+	double aspect_ratio = 1.0;
+
+	camera cam;
+	cam.reset(vec3(130.0, 100.0, -200.0), vec3(0, 10, -30), vec3(0, 1, 0), 30.0, aspect_ratio, 0.0, 15.0);
+
+	window_extent extent(1024, aspect_ratio);
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
 }
