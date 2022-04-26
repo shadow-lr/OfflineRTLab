@@ -23,14 +23,19 @@ color RTLab::ray_color(const ray &r,
 	if (!rec.mat_ptr->scatter(r, rec, srec))
 		return emitted;
 
+	const static double russian_roulette = 0.8;
+
+	if (random_double() > russian_roulette)
+		return emitted;
+
 	if (srec.is_specular) {
 		return srec.attenuation
-			* ray_color(srec.specular_ray, background, world, lights, depth - 1);
+			* ray_color(srec.specular_ray, background, world, lights, depth - 1) / russian_roulette;
 	}
 
-//	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
-//	mixture_pdf p(light_ptr, srec.pdf_ptr);
-	cosine_pdf p(rec.normal);
+	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
+	mixture_pdf p(light_ptr, srec.pdf_ptr);
+//	cosine_pdf p(rec.normal);
 
 	ray scattered = ray(rec.p, p.generate(), r.time());
 	auto pdf_val = p.value(scattered.direction());
@@ -38,7 +43,9 @@ color RTLab::ray_color(const ray &r,
 	// Monte-Carlo BRDF
 	return emitted
 		+ srec.attenuation * rec.mat_ptr->scattering_pdf(r, rec, scattered)
-			* ray_color(scattered, background, world, lights, depth - 1) / pdf_val;
+			* ray_color(scattered, background, world, lights, depth - 1) / pdf_val / russian_roulette;
+
+	// 690.309s
 }
 
 void RTLab::reset_scene(scene&& new_scene)
@@ -81,7 +88,7 @@ void RTLab::Render()
 
 	int key = 0;
 
-	cv::Mat image(extent.width, extent.height, CV_8UC3);
+	//cv::Mat image(extent.width, extent.height, CV_8UC3);
 
 	#pragma omp parallel for
 	for (int j = extent.height - 1; j >= 0; --j)
@@ -106,22 +113,22 @@ void RTLab::Render()
 			}
 		}
 
-		#pragma omp critical
-		{
-			if (key != 27)
-			{
-				cv::imshow("RTLab", image);
+		//#pragma omp critical
+		//{
+		//	if (key != 27)
+		//	{
+		//		cv::imshow("RTLab", image);
 
-				// j i
-				for (int width = 0 ; width < extent.width ; ++width)
-				{
-					image.at<cv::Vec3b>(extent.height - j - 1, width)[0] = color_table[j][width].e[0];
-					image.at<cv::Vec3b>(extent.height - j - 1, width)[1] = color_table[j][width].e[1];
-					image.at<cv::Vec3b>(extent.height - j - 1, width)[2] = color_table[j][width].e[2];
-				}
-				key = cv::waitKey(10);
-			}
-		}
+		//		// j i
+		//		for (int width = 0 ; width < extent.width ; ++width)
+		//		{
+		//			image.at<cv::Vec3b>(extent.height - j - 1, width)[0] = color_table[j][width].e[0];
+		//			image.at<cv::Vec3b>(extent.height - j - 1, width)[1] = color_table[j][width].e[1];
+		//			image.at<cv::Vec3b>(extent.height - j - 1, width)[2] = color_table[j][width].e[2];
+		//		}
+		//		key = cv::waitKey(10);
+		//	}
+		//}
 	}
 
 	std::ofstream filestream("image1.ppm");
