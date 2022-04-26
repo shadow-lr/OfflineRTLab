@@ -71,7 +71,7 @@ private:
 	static int thread_finish_count[thread_num + 1];
 
 	// render
-	int max_depth = 50;
+	int max_depth = 20;
 	int samples_per_pixel = 50;
 	color background = color(0.3, 0.3, 0.3);
 

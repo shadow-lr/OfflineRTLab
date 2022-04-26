@@ -13,6 +13,8 @@ image_texture::image_texture(const char *filename)
 		width = height = 0;
 	}
 
+	std::cout << "success load texture : " << filename << "\n";
+
 	bytes_per_scanline = bytes_per_pixel * width;
 }
 

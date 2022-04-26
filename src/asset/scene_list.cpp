@@ -2,6 +2,7 @@
 #include "asset/material.h"
 #include "asset/light.h"
 #include "asset/scene.h"
+#include "asset/image_texture.h"
 
 #include "geometry/translate.h"
 #include "geometry/rotate.h"
@@ -95,7 +96,7 @@ scene scene_list::test_scene()
 
 	auto green = make_shared<lambertian>(color(.12, .45, .15));
 
-	shared_ptr<object> opera_house = make_shared<shape::model::mesh_triangle>("assets/models/opera-house.obj", green);
+	shared_ptr<object> opera_house = make_shared<mesh_triangle>("assets/models/opera-house.obj", green);
 	objects.add(opera_house);
 
 	lights.add(make_shared<box>(point3(-115, -115, -115), point3(-85, -85, -85), shared_ptr<material>()));
@@ -107,5 +108,38 @@ scene scene_list::test_scene()
 	cam.reset(vec3(130.0, 100.0, -200.0), vec3(0, 10, -30), vec3(0, 1, 0), 30.0, aspect_ratio, 0.0, 15.0);
 
 	window_extent extent(1024, aspect_ratio);
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
+}
+
+scene scene_list::test_ball()
+{
+	hittable_list objects;
+	hittable_list lights;
+
+	auto grey = make_shared<lambertian>(color(.8, .8, .8));
+	auto stand = make_shared<lambertian>(color(.2, .2, .2));
+	auto checker_tex = make_shared<checker_texture>(color(0, 0, 0), color(1, 1, 0));
+	auto checker_surface = make_shared<lambertian>(checker_tex);
+
+	shared_ptr<object> mesh001 =
+		make_shared<mesh_triangle>("assets/models/test-ball/Mesh001.obj", grey, vec3(0.0571719, 0.213656, 0.0682078), vec3(0.482906));
+	shared_ptr<object> mesh002 =
+		make_shared<mesh_triangle>("assets/models/test-ball/Mesh002.obj", grey, vec3(0.156382, 0.777229, 0.161698), vec3(0.482906));
+	shared_ptr<object> mesh000 =
+		make_shared<mesh_triangle>("assets/models/test-ball/Mesh000.obj", stand, vec3(0.110507, 0.494301, 0.126194), vec3(0.482906));
+	shared_ptr<object> mesh050 = make_shared<mesh_triangle>("assets/models/test-ball/Mesh050.obj", checker_surface);
+
+	objects.add(mesh001);
+	objects.add(mesh002);
+	objects.add(mesh000);
+	objects.add(mesh050);
+
+	double aspect_ratio = 1.0;
+
+	camera cam;
+	cam.reset(vec3(3.04068,  3.17153, 3.20454), vec3(-0.67, -0.32, -0.65), vec3(0, 1, 0), 30.0, aspect_ratio, 0.0, 1.0);
+
+	window_extent extent(1024, aspect_ratio);
+
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
 }
