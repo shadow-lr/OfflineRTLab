@@ -1,11 +1,11 @@
 #pragma once
 
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 #include "math/vec3.h"
 
 namespace shape::procedural
 {
-	class sphere : public hittable
+	class sphere : public object
 	{
 	public:
 		sphere() = default;

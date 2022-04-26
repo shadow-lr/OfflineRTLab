@@ -18,7 +18,7 @@ bool bvh_node::bounding_box(double time0, double time1, aabb &output_box) const
 	return true;
 }
 
-bvh_node::bvh_node(const std::vector<shared_ptr<hittable>> &src_objects, double time0, double time1)
+bvh_node::bvh_node(const std::vector<shared_ptr<object>> &src_objects, double time0, double time1)
 {
 	auto objects = src_objects;
 	int axis = random_double(0, 2);
@@ -41,8 +41,8 @@ bvh_node::bvh_node(const std::vector<shared_ptr<hittable>> &src_objects, double 
 	}
 	else
 	{
-		left = make_shared<bvh_node>((std::vector<shared_ptr<hittable>>(objects.begin(), objects.begin() + size / 2)), time0, time1);
-		right = make_shared<bvh_node>((std::vector<shared_ptr<hittable>>(objects.begin() + size / 2, objects.end())), time0, time1);
+		left = make_shared<bvh_node>((std::vector<shared_ptr<object>>(objects.begin(), objects.begin() + size / 2)), time0, time1);
+		right = make_shared<bvh_node>((std::vector<shared_ptr<object>>(objects.begin() + size / 2, objects.end())), time0, time1);
 	}
 
 	aabb box_left, box_right;
@@ -54,17 +54,17 @@ bvh_node::bvh_node(const std::vector<shared_ptr<hittable>> &src_objects, double 
 	box = surrounding_box(box_left, box_right);
 }
 
-bool box_x_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b)
+bool box_x_compare(const shared_ptr<object> a, const shared_ptr<object> b)
 {
 	return box_compare(a, b, 0);
 }
 
-bool box_y_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b)
+bool box_y_compare(const shared_ptr<object> a, const shared_ptr<object> b)
 {
 	return box_compare(a, b, 1);
 }
 
-bool box_z_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b)
+bool box_z_compare(const shared_ptr<object> a, const shared_ptr<object> b)
 {
 	return box_compare(a, b, 2);
 }

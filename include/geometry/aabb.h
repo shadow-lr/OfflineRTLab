@@ -26,5 +26,5 @@ public:
 	point3 maximum;
 };
 
-// 将两个aabb重组成一个aabb
+// merge two aabb
 aabb surrounding_box(const aabb &box0, const aabb &box1);

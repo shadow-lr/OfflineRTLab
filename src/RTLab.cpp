@@ -5,8 +5,8 @@ int RTLab::thread_finish_count[thread_num + 1] = {0};
 
 color RTLab::ray_color(const ray &r,
 					   const color &background,
-					   const hittable &world,
-					   const hittable &lights,
+					   const object &world,
+					   const object &lights,
 					   int depth)
 {
 	hit_record rec;

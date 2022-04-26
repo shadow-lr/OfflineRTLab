@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 #include "math/vertex.h"
 #include "math/vec3.h"
 
@@ -38,7 +38,7 @@ namespace shape::model
 //		shared_ptr<material> mat_ptr;
 //	};
 
-	class triangle : public hittable
+	class triangle : public object
 	{
 	public:
 		triangle(vec3 v0_, vec3 v1_, vec3 v2_, shared_ptr<material> ptr = nullptr) : mat_ptr(ptr)

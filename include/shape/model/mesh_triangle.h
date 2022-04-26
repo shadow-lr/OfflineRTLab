@@ -1,7 +1,7 @@
 #pragma once
 
 #include "geometry/bvh.h"
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 #include "geometry/aabb.h"
 #include "asset/material.h"
 #include "math/vertex.h"
@@ -12,7 +12,7 @@
 
 namespace shape::model
 {
-	class mesh_triangle : public hittable
+	class mesh_triangle : public object
 	{
 	public:
 		mesh_triangle(const std::string& filename, shared_ptr<material> ptr, vec3 translate = {0.0}, vec3 scale = {1.0});

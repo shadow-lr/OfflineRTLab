@@ -47,7 +47,7 @@ public:
 
 	// Render
 	void Render();
-	color ray_color(const ray &r, const color &background, const hittable &world, const hittable &lights, int depth);
+	color ray_color(const ray &r, const color &background, const object &world, const object &lights, int depth);
 	void scan_calculate_color(int height, int width);
 
 	void write_color_table(color pixel_color, int height, int width);

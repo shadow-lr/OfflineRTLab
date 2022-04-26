@@ -58,7 +58,7 @@ namespace shape::model
 			0       0       0       1
 		*/
 
-		std::vector<shared_ptr<hittable>> list;
+		std::vector<shared_ptr<object>> list;
 
 		std::array<double, 12> model;
 		model[0] = scale[0];
@@ -128,7 +128,7 @@ namespace shape::model
 //		if (!warn.empty())
 //			std::cout << "WARN: " << warn << std::endl;
 //
-		std::vector<shared_ptr<hittable>> list;
+		std::vector<shared_ptr<object>> list;
 
 		for (size_t i = 0; i < shapes.size(); ++i)
 		{

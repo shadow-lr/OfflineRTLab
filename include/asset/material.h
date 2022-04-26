@@ -1,7 +1,7 @@
 #pragma once
 
 #include "geometry/pdf.h"
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 
 #include "asset/texture.h"
 

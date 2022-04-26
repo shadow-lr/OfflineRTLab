@@ -1,10 +1,10 @@
 #pragma once
 
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 
 namespace shape::procedural
 {
-	class cube : public hittable
+	class cube : public object
 	{
 	public:
 		cube() {}

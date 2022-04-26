@@ -2,7 +2,7 @@
 
 #include "onb.h"
 #include "math/vec3.h"
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 
 class pdf {
 public:
@@ -39,7 +39,7 @@ public:
 class hittable_pdf : public pdf
 {
 public:
-	hittable_pdf(const hittable& p, const point3 &origin) : ptr(p), o(origin) {}
+	hittable_pdf(const object& p, const point3 &origin) : ptr(p), o(origin) {}
 
 	~hittable_pdf() override {}
 
@@ -53,7 +53,7 @@ public:
 
 public:
 	point3 o;
-	const hittable& ptr;
+	const object& ptr;
 };
 
 // a mixture density of the cosine and light sampling

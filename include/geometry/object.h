@@ -24,8 +24,8 @@ struct hit_record
 	}
 };
 
-// This class(hittable) represents any object that can be hit by ray
-class hittable
+// This class(object) represents any object that can be hit by ray
+class object
 {
 public:
 	// ray intersection detection
@@ -37,27 +37,5 @@ public:
 
 	virtual vec3 random(const vec3 &origin) const { return vec3(1, 0, 0); }
 
-	virtual ~hittable() {}
-};
-
-// make normals point in the −y direction
-class flip_face : public hittable
-{
-public:
-	flip_face(shared_ptr<hittable> p) : ptr(p) {}
-private:
-	virtual bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const override
-	{
-		if (!ptr->hit(r, t_min, t_max, rec))
-			return false;
-
-		rec.front_face = !rec.front_face;
-		return true;
-	}
-	bool bounding_box(double time0, double time1, aabb &output_box) const override
-	{
-		return ptr->bounding_box(time0, time1, output_box);
-	}
-public:
-	shared_ptr<hittable> ptr;
+	virtual ~object() {}
 };

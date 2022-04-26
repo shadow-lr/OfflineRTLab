@@ -1,10 +1,10 @@
 #pragma once
 
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 
 namespace shape::procedural
 {
-	class xy_rect : public hittable
+	class xy_rect : public object
 	{
 	public:
 		xy_rect() {}
@@ -19,7 +19,7 @@ namespace shape::procedural
 		double x0{}, x1{}, y0{}, y1{}, k{}; // z = k
 	};
 
-	class xz_rect : public hittable
+	class xz_rect : public object
 	{
 	public:
 		xz_rect() {}
@@ -36,7 +36,7 @@ namespace shape::procedural
 		double x0{}, x1{}, z0{}, z1{}, k{};	// y = k
 	};
 
-	class yz_rect : public hittable
+	class yz_rect : public object
 	{
 	public:
 		yz_rect() {}

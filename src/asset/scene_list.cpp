@@ -9,6 +9,7 @@
 #include "shape/procedural/box.h"
 #include "shape/procedural/sphere.h"
 #include "shape/procedural/aarect.h"
+#include "shape/procedural/flip_face.h"
 
 #include "shape/model/triangle.h"
 #include "shape/model/mesh_triangle.h"
@@ -18,6 +19,7 @@ using shape::procedural::sphere;
 using shape::procedural::xy_rect;
 using shape::procedural::yz_rect;
 using shape::procedural::xz_rect;
+using shape::procedural::flip_face;
 
 using shape::model::triangle;
 using shape::model::mesh_triangle;
@@ -37,7 +39,7 @@ scene scene_list::cornell_box()
 
 	// box
 	shared_ptr<material> aluminum = make_shared<metal>(color(0.8, 0.85, 0.88), 0.0);
-	shared_ptr<hittable> box1 = make_shared<box>(point3(0, 0, 0), point3(165, 330, 165), aluminum);
+	shared_ptr<object> box1 = make_shared<box>(point3(0, 0, 0), point3(165, 330, 165), aluminum);
 	box1 = make_shared<rotate_y>(box1, 15);
 	box1 = make_shared<translate>(box1, vec3(265, 0, 295));
 	objects.add(box1);
@@ -93,7 +95,7 @@ scene scene_list::test_scene()
 
 	auto green = make_shared<lambertian>(color(.12, .45, .15));
 
-	shared_ptr<hittable> opera_house = make_shared<shape::model::mesh_triangle>("assets/models/opera-house.obj", green);
+	shared_ptr<object> opera_house = make_shared<shape::model::mesh_triangle>("assets/models/opera-house.obj", green);
 	objects.add(opera_house);
 
 	lights.add(make_shared<box>(point3(-115, -115, -115), point3(-85, -85, -85), shared_ptr<material>()));

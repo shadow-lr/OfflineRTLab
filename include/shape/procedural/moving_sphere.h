@@ -1,10 +1,10 @@
 #pragma once
 
-#include "geometry/hittable.h"
+#include "geometry/object.h"
 
 namespace shape::procedural
 {
-	class moving_sphere : public hittable
+	class moving_sphere : public object
 	{
 	public:
 		moving_sphere() = default;

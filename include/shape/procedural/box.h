@@ -4,7 +4,7 @@
 
 namespace shape::procedural
 {
-	class box : public hittable
+	class box : public object
 	{
 	public:
 		box() {}

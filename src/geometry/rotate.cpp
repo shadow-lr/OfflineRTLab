@@ -1,6 +1,6 @@
 #include "geometry/rotate.h"
 
-rotate_y::rotate_y(shared_ptr<hittable> p, double angle) : ptr(p)
+rotate_y::rotate_y(shared_ptr<object> p, double angle) : ptr(p)
 {
 	auto radians = degrees_to_radians(angle);
 	sin_theta = sin(radians);
