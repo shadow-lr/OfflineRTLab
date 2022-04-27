@@ -10,5 +10,5 @@ Part of the code reference from Peter Shirley’s Ray Tracing mini-books, done i
 - Support rendering display progress bar
 
 ## Result
-- <div align="center"><img src="https://cdn.jsdelivr.net/gh/shadow-lr/MdPictureHouse/cnblogs/img/OfflineRTLab/cornell-box.png"/></div>
-- <div align="center"><img src="https://cdn.jsdelivr.net/gh/shadow-lr/MdPictureHouse/cnblogs/img/OfflineRTLab/book2-final.png"/></div>
+<img src="./result/cornell-box.png">
+<img src="./result/book2-final.png.png" alt="alt text">
