@@ -12,4 +12,4 @@ Part of the code reference from Peter Shirley’s Ray Tracing mini-books, done i
 ## Result
 <img src="./result/cornell-box.png" alt="cornell-box">
 
-<img src="./result/book2-final.png.png" alt="book2-final-scene">
+<img src="./result/book2-final.png" alt="book2-final-scene">
