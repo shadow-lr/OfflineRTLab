@@ -18,41 +18,7 @@ namespace shape::model
 {
 	bool triangle::hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const
 	{
-//		// todo:
-//		double u, v;
-//		vec3 pvec = cross(r_in.direction(), e2);
-//		double det = dot(e1, pvec);
-//		if (det == 0 || det < 0)
-//			return false;
-//
-//		vec3 tvec = r_in.origin() - v0;
-//		u = dot(tvec, pvec);
-//		if (u < 0 || u > det)
-//			return false;
-//
-//		vec3 qvec = cross(tvec, e1);
-//		v = dot(r_in.direction(), qvec);
-//		if (v < 0 || u + v > det)
-//			return false;
-//
-//		double invDet = 1 / det;
-//
-//		// closest
-//		double tnear = dot(e2, qvec) * invDet;
-//		u *= invDet;
-//		v *= invDet;
-//
-//		if (tnear < t_min || tnear > t_max)
-//			return false;
-//
-//		rec.t = tnear;
-//		rec.u = u;
-//		rec.v = v;
-//		rec.normal = normal;
-//
-//		return true;
-		float t, u, v;
-		bool is_hit = false;
+		double t, u, v;
 
 		// E1
 		vec3 E1 = vertices[1].pos - vertices[0].pos;
@@ -61,7 +27,7 @@ namespace shape::model
 		// P
 		vec3 P = cross(r_in.direction(), E2);
 		// determinant
-		float det = dot(E1, P);
+		double det = dot(E1, P);
 
 		// keep det > 0, modify T accordingly
 		vec3 T;
@@ -75,11 +41,10 @@ namespace shape::model
 			det = -det;
 		}
 
-		//  determinant 接近0时，表示r射线与平面几乎平行
 		if (det < 0.0001f)
 			return false;
 
-		// 计算 u, 保证 u <= 1
+		// u <= 1
 		u = dot(T, P);
 		if (u < 0.0f || u > det)
 			return false;
@@ -87,12 +52,11 @@ namespace shape::model
 		// Q
 		vec3 Q = cross(T, E1);
 
-		// 计算 v, 保证 u + v <= 1
+		// u + v <= 1
 		v = dot(r_in.direction(), Q);
 		if (v < 0.0f || u + v > det)
 			return false;
 
-		// 计算 t, 射线的缩放参数, 表示与三角形相交的点
 		t = dot(E2, Q);
 
 		float fInvDet = 1.0f / det;
@@ -104,14 +68,11 @@ namespace shape::model
 		u = u * fInvDet;
 		v = v * fInvDet;
 
-		// 纹理uv坐标插值
 		rec.u = vertices[0].tex_coord.x() * (1 - u - v) + vertices[1].tex_coord.x() * u + vertices[2].tex_coord.x() * v;
 		rec.v = vertices[0].tex_coord.y() * (1 - u - v) + vertices[1].tex_coord.y() * u + vertices[2].tex_coord.y() * v;
 
-		// 法线插值
 		rec.normal = vertices[0].normal * (1 - u - v) + vertices[1].normal * u + vertices[2].normal * v;
 
-		// 纹理
 		rec.mat_ptr = mat_ptr;
 
 		return true;

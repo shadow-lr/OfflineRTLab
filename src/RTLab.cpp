@@ -33,9 +33,9 @@ color RTLab::ray_color(const ray &r,
 			* ray_color(srec.specular_ray, env_skybox, world, lights, depth - 1) / russian_roulette;
 	}
 
-	//auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
-	//mixture_pdf p(light_ptr, srec.pdf_ptr);
-	cosine_pdf p(rec.normal);
+	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
+	mixture_pdf p(light_ptr, srec.pdf_ptr);
+//	cosine_pdf p(rec.normal);
 
 	ray scattered = ray(rec.p, p.generate(), r.time());
 	auto pdf_val = p.value(scattered.direction());
@@ -87,8 +87,6 @@ void RTLab::Render()
 
 	int key = 0;
 
-	cv::Mat image(extent.width, extent.height, CV_8UC3);
-
 	#pragma omp parallel for
 	for (int j = extent.height - 1; j >= 0; --j)
 	{
@@ -111,23 +109,6 @@ void RTLab::Render()
 				}
 			}
 		}
-
-		//#pragma omp critical
-		//{
-		//	if (key != 27)
-		//	{
-		//		cv::imshow("RTLab", image);
-
-		//		// j i
-		//		for (int width = 0 ; width < extent.width ; ++width)
-		//		{
-		//			image.at<cv::Vec3b>(extent.height - j - 1, width)[0] = color_table[j][width].e[0];
-		//			image.at<cv::Vec3b>(extent.height - j - 1, width)[1] = color_table[j][width].e[1];
-		//			image.at<cv::Vec3b>(extent.height - j - 1, width)[2] = color_table[j][width].e[2];
-		//		}
-		//		key = cv::waitKey(10);
-		//	}
-		//}
 	}
 
 	std::ofstream filestream("cornell-box.ppm");
