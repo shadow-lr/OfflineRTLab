@@ -50,6 +50,9 @@ namespace shape::model
 			vertices[0].normal = normal;
 			vertices[1].normal = normal;
 			vertices[2].normal = normal;
+
+			e1 = vertices[1].pos - vertices[0].pos;
+			e2 = vertices[2].pos - vertices[0].pos;
 //			area = cross(e1, e2).length() * 0.5;
 		}
 
@@ -58,6 +61,9 @@ namespace shape::model
 			vertices[0] = v0;
 			vertices[1] = v1;
 			vertices[2] = v2;
+
+			e1 = vertices[1].pos - vertices[0].pos;
+			e2 = vertices[2].pos - vertices[0].pos;
 		}
 
 		bool hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const override;
@@ -66,6 +72,7 @@ namespace shape::model
 
 	public:
 		std::array<vertex, 3> vertices;
+		vec3 e1, e2;
 		shared_ptr<material> mat_ptr;
 	};
 }

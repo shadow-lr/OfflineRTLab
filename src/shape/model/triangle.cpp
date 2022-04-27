@@ -18,61 +18,41 @@ namespace shape::model
 {
 	bool triangle::hit(const ray &r_in, double t_min, double t_max, hit_record &rec) const
 	{
-		double t, u, v;
-
-		// E1
-		vec3 E1 = vertices[1].pos - vertices[0].pos;
-		// E2
-		vec3 E2 = vertices[2].pos - vertices[0].pos;
-		// P
-		vec3 P = cross(r_in.direction(), E2);
+		double u, v;
+		vec3 pvec = cross(r_in.direction(), e2);
 		// determinant
-		double det = dot(E1, P);
+		double det = dot(e1, pvec);
 
-		// keep det > 0, modify T accordingly
-		vec3 T;
-		if (det > 0)
-		{
-			T = vec3(r_in.origin() - vertices[0].pos);
-		}
-		else
-		{
-			T = vertices[0].pos - r_in.origin();
-			det = -det;
-		}
-
-		if (det < 0.0001f)
+		if (det == 0 || det < 0)
 			return false;
 
-		// u <= 1
-		u = dot(T, P);
-		if (u < 0.0f || u > det)
+		vec3 tvec = r_in.origin() - vertices[0].pos;
+
+		// 0.0 <= u <= 1
+		u = dot(tvec, pvec);
+		if (u < 0.0 || u > det)
 			return false;
 
-		// Q
-		vec3 Q = cross(T, E1);
+		vec3 qvec = cross(tvec, e1);
 
 		// u + v <= 1
-		v = dot(r_in.direction(), Q);
-		if (v < 0.0f || u + v > det)
+		v = dot(r_in.direction(), qvec);
+		if (v < 0.0 || u + v > det)
 			return false;
 
-		t = dot(E2, Q);
-
-		float fInvDet = 1.0f / det;
-		rec.t = t * fInvDet;
-		if (rec.t <= t_min || rec.t >= t_max)
+		double invDet = 1.0 / det;
+		rec.t = dot(e2, qvec) * invDet;
+		if (rec.t < t_min || rec.t > t_max)
 			return false;
+
 		rec.p = r_in.at(rec.t);
 
-		u = u * fInvDet;
-		v = v * fInvDet;
+		u = u * invDet;
+		v = v * invDet;
 
 		rec.u = vertices[0].tex_coord.x() * (1 - u - v) + vertices[1].tex_coord.x() * u + vertices[2].tex_coord.x() * v;
 		rec.v = vertices[0].tex_coord.y() * (1 - u - v) + vertices[1].tex_coord.y() * u + vertices[2].tex_coord.y() * v;
-
 		rec.normal = vertices[0].normal * (1 - u - v) + vertices[1].normal * u + vertices[2].normal * v;
-
 		rec.mat_ptr = mat_ptr;
 
 		return true;
