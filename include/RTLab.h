@@ -47,7 +47,7 @@ public:
 
 	// Render
 	void Render();
-	color ray_color(const ray &r, const color &background, const object &world, const object &lights, int depth);
+	color ray_color(const ray &r, const skybox& env_skybox, const object &world, const object &lights, int depth);
 	void scan_calculate_color(int height, int width);
 
 	void write_color_table(color pixel_color, int height, int width);
@@ -63,6 +63,7 @@ public:
 	const hittable_list &GetLights() const { return m_scene->GetLights(); }
 	const window_extent &GetExtent() const { return m_scene->GetExtent(); }
 	const camera &GetCamera() const { return m_scene->GetCamera(); }
+	const skybox &GetSkybox() const { return m_scene->GetSkybox(); }
 
 private:
 	shared_ptr<scene> m_scene;
@@ -72,8 +73,7 @@ private:
 
 	// render
 	int max_depth = 20;
-	int samples_per_pixel = 50;
-	color background = color(0.3, 0.3, 0.3);
+	int samples_per_pixel = 20;
 
 	std::vector<std::vector<color>> color_table;
 	std::vector<color> color_table_raw;

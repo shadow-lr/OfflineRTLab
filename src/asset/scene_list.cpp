@@ -3,6 +3,7 @@
 #include "asset/light.h"
 #include "asset/scene.h"
 #include "asset/image_texture.h"
+#include "asset/skybox.h"
 
 #include "geometry/translate.h"
 #include "geometry/rotate.h"
@@ -57,16 +58,8 @@ scene scene_list::cornell_box()
 	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
 	objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
 
-//	shared_ptr<hittable> triangle = make_shared<shape::model::triangle>(point3(190, 120, 190), point3(190, 140, 190), point3(190, 140, 220), green);
-//	objects.add(triangle);
-
-//	shared_ptr<hittable> bunny =
-//		make_shared<shape::model::mesh_triangle>("assets/models/bunny.obj", green, vec3(350.0, -50.0, 50.0), vec3(1500.0, 1500.0, 1500.0));
-//	objects.add(bunny);
-
 	// lights
 	hittable_list lights;
-	//shared_ptr<hittable_list> lights = make_shared<hittable_list>();
 	lights.add(make_shared<xz_rect>(213, 343, 227, 332, 554, shared_ptr<material>()));
 	lights.add(make_shared<sphere>(point3(190, 90, 190), 90, shared_ptr<material>()));
 
@@ -83,10 +76,11 @@ scene scene_list::cornell_box()
 
 	// move to camera
 	camera cam;
-
 	cam.reset(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
-	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
+	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
 
 scene scene_list::test_scene()
@@ -108,7 +102,10 @@ scene scene_list::test_scene()
 	cam.reset(vec3(130.0, 100.0, -200.0), vec3(0, 10, -30), vec3(0, 1, 0), 30.0, aspect_ratio, 0.0, 15.0);
 
 	window_extent extent(1024, aspect_ratio);
-	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
+
+	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
 
 scene scene_list::test_ball()
@@ -141,5 +138,7 @@ scene scene_list::test_ball()
 
 	window_extent extent(1024, aspect_ratio);
 
-	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent));
+	std::unique_ptr<skybox> env_skybox = std::make_unique<blue_skybox>();
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }

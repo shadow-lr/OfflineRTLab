@@ -4,7 +4,7 @@
 int RTLab::thread_finish_count[thread_num + 1] = {0};
 
 color RTLab::ray_color(const ray &r,
-					   const color &background,
+					   const skybox& env_skybox,
 					   const object &world,
 					   const object &lights,
 					   int depth)
@@ -16,7 +16,7 @@ color RTLab::ray_color(const ray &r,
 		return color(0, 0, 0);
 
 	if (!world.hit(r, 0.001, infinity, rec))
-		return background;
+		return env_skybox.getBackgroundColor(r);
 
 	scatter_record srec;
 	color emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
@@ -30,7 +30,7 @@ color RTLab::ray_color(const ray &r,
 
 	if (srec.is_specular) {
 		return srec.attenuation
-			* ray_color(srec.specular_ray, background, world, lights, depth - 1) / russian_roulette;
+			* ray_color(srec.specular_ray, env_skybox, world, lights, depth - 1) / russian_roulette;
 	}
 
 	//auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
@@ -43,9 +43,8 @@ color RTLab::ray_color(const ray &r,
 	// Monte-Carlo BRDF
 	return emitted
 		+ srec.attenuation * rec.mat_ptr->scattering_pdf(r, rec, scattered)
-			* ray_color(scattered, background, world, lights, depth - 1) / pdf_val / russian_roulette;
+			* ray_color(scattered, env_skybox, world, lights, depth - 1) / pdf_val / russian_roulette;
 
-	// 690.309s
 }
 
 void RTLab::reset_scene(scene&& new_scene)
@@ -64,7 +63,7 @@ void RTLab::scan_calculate_color(int height, int width)
 		double u = (i + random_double()) / (extent.width - 1.0);
 		double v = (j + random_double()) / (extent.height - 1.0);
 		ray r = cam.get_ray(u, v);
-		pixel_color += ray_color(r, background, GetWorld(), GetLights(), max_depth);
+		pixel_color += ray_color(r, GetSkybox(), GetWorld(), GetLights(), max_depth);
 	}
 	write_color_table(pixel_color, j, i);
 }
@@ -88,7 +87,7 @@ void RTLab::Render()
 
 	int key = 0;
 
-	//cv::Mat image(extent.width, extent.height, CV_8UC3);
+	cv::Mat image(extent.width, extent.height, CV_8UC3);
 
 	#pragma omp parallel for
 	for (int j = extent.height - 1; j >= 0; --j)
@@ -131,7 +130,7 @@ void RTLab::Render()
 		//}
 	}
 
-	std::ofstream filestream("image2.png");
+	std::ofstream filestream("cornell-box.ppm");
 
 	// Render
 	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
