@@ -50,4 +50,3 @@ endif()
 
 # assets
 #file(COPY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-# 判断某个文件夹不存在
