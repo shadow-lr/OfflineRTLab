@@ -72,8 +72,8 @@ private:
 	static int thread_finish_count[thread_num + 1];
 
 	// render
-	int max_depth = 8;
-	int samples_per_pixel = 1000;
+	int max_depth = 20;
+	int samples_per_pixel = 500;
 
 	std::vector<std::vector<color>> color_table;
 	std::vector<color> color_table_raw;

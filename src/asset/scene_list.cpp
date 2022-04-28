@@ -14,6 +14,7 @@
 #include "shape/procedural/flip_face.h"
 #include "shape/procedural/cube.h"
 #include "shape/procedural/square.h"
+#include "shape/procedural/cylinder.h"
 
 #include "shape/model/triangle.h"
 #include "shape/model/mesh_triangle.h"
@@ -26,6 +27,7 @@ using shape::procedural::xz_rect;
 using shape::procedural::flip_face;
 using shape::procedural::cube;
 using shape::procedural::square;
+using shape::procedural::cylinder;
 
 using shape::model::triangle;
 using shape::model::mesh_triangle;
@@ -166,9 +168,14 @@ scene scene_list::dark1()
 	objects.add(make_shared<cube>(vec3(-0.5, 0.8, -1.5), 1.5, make_shared<lambertian>(checker))); // or vec3(-0.5 0.75 -1.5)
 
 	auto mat2_tex = make_shared<image_texture>("assets/textures/jupiter_map.jpg");
-	objects.add(make_shared<sphere>(vec3(2, 1, 0), 1.0, make_shared<lambertian>(mat2_tex)));
+//	objects.add(make_shared<sphere>(vec3(2, 1, 0), 1.0, make_shared<lambertian>(mat2_tex)));
 	objects.add(make_shared<sphere>(vec3(-0.5, 2.5, -1.5), 1.0, shared_ptr<material>(new dielectric(1.5))));
-	objects.add(make_shared<sphere>(vec3(-1.5, 1, 1.5), 1, make_shared<metal>(vec3(0.8, 0.6, 0.2), 0.0)));
+//	objects.add(make_shared<sphere>(vec3(-1.5, 1, 1.5), 1, make_shared<metal>(vec3(0.8, 0.6, 0.2), 0.0)));
+
+	objects.add(make_shared<cylinder>(2.0, 90, -2.0, 2.0, make_shared<lambertian>(checker)));
+
+	auto checker2 = make_shared<checker_texture>(vec3(1, 0, 0), vec3(0.9, 0.9, 0.9));
+	objects.add(make_shared<cylinder>(0.5, 30, -2.0, 2.0, make_shared<lambertian>(checker2)));
 
 	// light
 	auto light = make_shared<diffuse_light>(color(7, 7, 7));
@@ -179,7 +186,7 @@ scene scene_list::dark1()
 	camera cam;
 	cam.reset(vec3(4, 6, 15), vec3(0, 1, 0), vec3(0, 1, 0), 20.0, aspect_ratio, 0.0, 15.0);
 
-	window_extent extent(800, aspect_ratio);
+	window_extent extent(2048, aspect_ratio);
 	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));

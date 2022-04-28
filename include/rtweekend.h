@@ -21,6 +21,8 @@ const double infinity = std::numeric_limits<double>::infinity();
 #define INV_PI    0.31830988618379067154
 #define INV_2PI   0.15915494309189533577
 
+#define EPSILON 0.00016
+
 // Utility Functions
 
 inline double degrees_to_radians(double degrees)
@@ -56,6 +58,31 @@ inline double clamp(double x, double min, double max)
 inline int random_int(int min, int max)
 {
 	return static_cast<int>(random_double(min, max + 1));
+}
+
+inline bool quadratic(double a, double b, double c, double& t0, double& t1)
+{
+	double discrim = b * b - 4 * a * c;
+	// equation has no solution
+	if (discrim < 0)
+		return false;
+	double root_discrim = std::sqrt(discrim);
+
+	double q;
+	if (b < 0)
+	{
+		q = -0.5 * (b - root_discrim);
+	}
+	else
+	{
+		q = -0.5 * (b + root_discrim);
+	}
+	t0 = q / a;
+	t1 = c / q;
+	if (t0 > t1)
+		std::swap(t0, t1);
+
+	return true;
 }
 
 // Common Headers
