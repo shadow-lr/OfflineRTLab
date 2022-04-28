@@ -12,13 +12,16 @@ image_texture::image_texture(const char *filename)
 		std::cerr << "ERROR: Could not load texture image file '" << filename << "'.\n";
 		width = height = 0;
 	}
-
-	std::cout << "success load texture : " << filename << "\n";
+	else
+	{
+		std::cout << "success load texture : " << filename << "\n";
+	}
 
 	bytes_per_scanline = bytes_per_pixel * width;
 }
 
-color image_texture::value(double u, double v, const vec3 &p) const {
+color image_texture::value(double u, double v, const vec3 &p) const
+{
 	// If we have no texture data, then return solid cyan as a debugging aid.
 	if (data == nullptr)
 		return color(0, 1, 1);

@@ -12,6 +12,8 @@
 #include "shape/procedural/sphere.h"
 #include "shape/procedural/aarect.h"
 #include "shape/procedural/flip_face.h"
+#include "shape/procedural/cube.h"
+#include "shape/procedural/square.h"
 
 #include "shape/model/triangle.h"
 #include "shape/model/mesh_triangle.h"
@@ -22,6 +24,8 @@ using shape::procedural::xy_rect;
 using shape::procedural::yz_rect;
 using shape::procedural::xz_rect;
 using shape::procedural::flip_face;
+using shape::procedural::cube;
+using shape::procedural::square;
 
 using shape::model::triangle;
 using shape::model::mesh_triangle;
@@ -110,18 +114,20 @@ scene scene_list::test_scene()
 
 scene scene_list::test_ball()
 {
-	hittable_list objects;
-	hittable_list lights;
+	hittable_list objects, lights;
 
 	auto grey = make_shared<lambertian>(color(.8, .8, .8));
 	auto stand = make_shared<lambertian>(color(.2, .2, .2));
 	auto checker_tex = make_shared<checker_texture>(color(0, 0, 0), color(1, 1, 0));
 	auto checker_surface = make_shared<lambertian>(checker_tex);
 
+	auto glass = make_shared<dielectric>(1.5);
+	auto metal_sphere = make_shared<metal>(color(0.8, 0.8, 0.9), 0.0);
+
 	shared_ptr<object> mesh001 =
 		make_shared<mesh_triangle>("assets/models/test-ball/Mesh001.obj", grey, vec3(0.0571719, 0.213656, 0.0682078), vec3(0.482906));
 	shared_ptr<object> mesh002 =
-		make_shared<mesh_triangle>("assets/models/test-ball/Mesh002.obj", grey, vec3(0.156382, 0.777229, 0.161698), vec3(0.482906));
+		make_shared<mesh_triangle>("assets/models/test-ball/Mesh002.obj", metal_sphere, vec3(0.156382, 0.777229, 0.161698), vec3(0.482906));
 	shared_ptr<object> mesh000 =
 		make_shared<mesh_triangle>("assets/models/test-ball/Mesh000.obj", stand, vec3(0.110507, 0.494301, 0.126194), vec3(0.482906));
 	shared_ptr<object> mesh050 = make_shared<mesh_triangle>("assets/models/test-ball/Mesh050.obj", checker_surface);
@@ -136,9 +142,45 @@ scene scene_list::test_ball()
 	camera cam;
 	cam.reset(vec3(3.04068,  3.17153, 3.20454), vec3(-0.67, -0.32, -0.65), vec3(0, 1, 0), 30.0, aspect_ratio, 0.0, 1.0);
 
-	window_extent extent(1024, aspect_ratio);
+	window_extent extent(800, aspect_ratio);
 
-	std::unique_ptr<skybox> env_skybox = std::make_unique<blue_skybox>();
+	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(1, 1, 1));
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
+}
+
+scene scene_list::dark1()
+{
+	hittable_list objects, lights;
+
+	auto ground_tex = make_shared<image_texture>("assets/textures/marble.jpg");
+
+	objects.add(make_shared<square>(vec3(10, 0, 10), vec3(-10, 0, 10), vec3(-10, 0, -10), vec3(10, 0, -10), make_shared<
+		lambertian>(ground_tex)));
+	objects.add(make_shared<square>(vec3(100, 0, 95), vec3(0, 0, -5), vec3(0, 100, -5), vec3(100, 100, 95), make_shared<
+		metal>(vec3(0.7, 0.6, 0.5), 0.0)));
+	objects.add(make_shared<square>(vec3(-100, 0, 95), vec3(-100, 100, 95), vec3(0, 100, -5), vec3(0, 0, -5), make_shared<
+		metal>(vec3(0.7, 0.6, 0.5), 0.0)));
+
+	auto checker = make_shared<checker_texture>(vec3(0.2, 0.3, 0.1), vec3(0.9, 0.9, 0.9));
+	objects.add(make_shared<cube>(vec3(-0.5, 0.8, -1.5), 1.5, make_shared<lambertian>(checker))); // or vec3(-0.5 0.75 -1.5)
+
+	auto mat2_tex = make_shared<image_texture>("assets/textures/jupiter_map.jpg");
+	objects.add(make_shared<sphere>(vec3(2, 1, 0), 1.0, make_shared<lambertian>(mat2_tex)));
+	objects.add(make_shared<sphere>(vec3(-0.5, 2.5, -1.5), 1.0, shared_ptr<material>(new dielectric(1.5))));
+	objects.add(make_shared<sphere>(vec3(-1.5, 1, 1.5), 1, make_shared<metal>(vec3(0.8, 0.6, 0.2), 0.0)));
+
+	// light
+	auto light = make_shared<diffuse_light>(color(7, 7, 7));
+	objects.add(make_shared<flip_face>(make_shared<cube>(vec3(0.4, 6, 1.0), 2.5, light)));
+
+	double aspect_ratio = 16.0 / 9.0;
+
+	camera cam;
+	cam.reset(vec3(4, 6, 15), vec3(0, 1, 0), vec3(0, 1, 0), 20.0, aspect_ratio, 0.0, 15.0);
+
+	window_extent extent(800, aspect_ratio);
+	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }

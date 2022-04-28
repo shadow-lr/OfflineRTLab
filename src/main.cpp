@@ -5,6 +5,6 @@ int main()
 {
 	RTLab lab;
 
-	lab.reset_scene(scene_list::test_ball());
+	lab.reset_scene(scene_list::dark1());
 	lab.Render();
 }

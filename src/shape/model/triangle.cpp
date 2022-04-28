@@ -23,10 +23,20 @@ namespace shape::model
 		// determinant
 		double det = dot(e1, pvec);
 
-		if (det == 0 || det < 0)
-			return false;
+		vec3 tvec;
 
-		vec3 tvec = r_in.origin() - vertices[0].pos;
+		if (det > 0)
+		{
+			tvec = r_in.origin() - vertices[0].pos;
+		}
+		else
+		{
+			tvec = vertices[0].pos - r_in.origin();
+			det = -det;
+		}
+
+//		if (det < 1e-6)
+//			return false;
 
 		// 0.0 <= u <= 1
 		u = dot(tvec, pvec);

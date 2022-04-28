@@ -19,7 +19,7 @@ double lambertian::scattering_pdf(const ray& r_in, const hit_record& rec, const 
 bool metal::scatter(const ray& r_in, const hit_record& rec, scatter_record& srec) const
 {
 	vec3 reflected = reflect(normalize(r_in.direction()), rec.normal);
-	srec.specular_ray = ray(rec.p, reflected+fuzz*random_in_unit_sphere(), r_in.time());
+	srec.specular_ray = ray(rec.p, reflected + fuzz * random_in_unit_sphere(), r_in.time());
 	srec.attenuation = albedo;
 	srec.is_specular = true;
 	srec.pdf_ptr = nullptr;

@@ -111,7 +111,7 @@ void RTLab::Render()
 		}
 	}
 
-	std::ofstream filestream("test-ball-temp.ppm");
+	std::ofstream filestream("dark1.png");
 
 	// Render
 	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";

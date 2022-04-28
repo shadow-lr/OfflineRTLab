@@ -54,7 +54,6 @@ public:
 	lambertian(shared_ptr<texture> a) : albedo(a) {}
 
 	virtual bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
-
 	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override;
 
 public:
