@@ -16,6 +16,7 @@
 #include "shape/procedural/square.h"
 #include "shape/procedural/cylinder.h"
 #include "shape/procedural/disk.h"
+#include "shape/procedural/cone.h"
 
 #include "shape/model/triangle.h"
 #include "shape/model/mesh_triangle.h"
@@ -30,6 +31,7 @@ using shape::procedural::cube;
 using shape::procedural::square;
 using shape::procedural::cylinder;
 using shape::procedural::disk;
+using shape::procedural::cone;
 
 using shape::model::triangle;
 using shape::model::mesh_triangle;
@@ -179,7 +181,9 @@ scene scene_list::dark1()
 	auto checker2 = make_shared<checker_texture>(vec3(1, 0, 0), vec3(0.9, 0.9, 0.9));
 	objects.add(make_shared<cylinder>(0.5, 30, -2.0, 2.0, make_shared<lambertian>(checker2)));
 
-	objects.add(make_shared<disk>(2, 1.5, 0.5, 180, make_shared<lambertian>(checker)));
+	objects.add(make_shared<disk>(2.0, 1.5, 0.5, 180.0, make_shared<lambertian>(checker)));
+
+	objects.add(make_shared<cone>(5.0, 1.0, 360.0, make_shared<lambertian>(mat2_tex)));
 
 	// light
 	auto light = make_shared<diffuse_light>(color(7, 7, 7));
