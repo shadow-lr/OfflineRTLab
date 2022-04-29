@@ -111,7 +111,7 @@ void RTLab::Render()
 		}
 	}
 
-	std::ofstream filestream("dark1_test_cylinder.png");
+	std::ofstream filestream("dark1_test_disk.png");
 
 	// Render
 	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
