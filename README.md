@@ -19,6 +19,6 @@ scene's data refer to project [Andromeda](https://github.com/moranzcw/Andromeda)
 
 <img src="./result/dark1.png" alt="dark1-scene">
 
-<img src="./result/dark1_cylinder_disk.png" alt="dark1_cylinder_disk-scene">
+<img src="./result/shape_show.png" alt="shape_show-scene">
 
 <img src="./result/test-ball.png" alt="test-ball">
