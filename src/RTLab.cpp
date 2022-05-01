@@ -111,7 +111,7 @@ void RTLab::Render()
 		}
 	}
 
-	std::ofstream filestream("dark1_test_cone.png");
+	std::ofstream filestream("shape_show_test_final_rotate.png");
 
 	// Render
 	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";

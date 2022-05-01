@@ -33,12 +33,12 @@ namespace shape::procedural
 		if (!quadratic(a, b, c, t0, t1))
 			return false;
 
-		if (t0 > t_max || t1 <= 0)
+		if (t0 > t_max || t1 < t_min)
 			return false;
 
 		// Check quadric shape t0 and t1 for nearest inerseciton
 		double tShapeHit = t0;
-		if (tShapeHit <= 0)
+		if (tShapeHit < t_min)
 		{
 			tShapeHit = t1;
 			if (tShapeHit > t_max)

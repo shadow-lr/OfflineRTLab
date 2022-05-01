@@ -5,12 +5,12 @@
 
 namespace shape::procedural
 {
-	hyperboloid::hyperboloid(point3 point1, point3 point2, double tm, shared_ptr<material> m)
+	hyperboloid::hyperboloid(point3 point1, point3 point2, double phi, shared_ptr<material> m)
 		: p1(point1), p2(point2), mat_ptr(m)
 	{
 		p1 = point1;
 		p2 = point2;
-		phi_max = degrees_to_radians(clamp(tm, 0, 360));
+		phi_max = degrees_to_radians(clamp(phi, 0, 360));
 		double radius1 = std::sqrt(p1.x() * p1.x() + p1.y() * p1.y());
 		double radius2 = std::sqrt(p2.x() * p2.x() + p2.y() * p2.y());
 		r_max = std::max(radius1, radius2);
@@ -52,11 +52,11 @@ namespace shape::procedural
 		if (!quadratic(a, b, c, t0, t1))
 			return false;
 
-		if (t0 > t_max || t1 <= 0)
+		if (t0 > t_max || t1 < t_min)
 			return false;
 
 		double tShapeHit = t0;
-		if (tShapeHit <= 0)
+		if (tShapeHit < t_min)
 		{
 			tShapeHit = t1;
 			if (tShapeHit > t_max)

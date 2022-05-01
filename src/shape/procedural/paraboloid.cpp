@@ -31,11 +31,11 @@ namespace shape::procedural
 		if (!quadratic(a, b, c, t0, t1))
 			return false;
 
-		if (t0 > t_max || t1 <= 0)
+		if (t0 > t_max || t1 < t_min)
 			return false;
 
 		double tShapeHit = t0;
-		if (tShapeHit <= 0)
+		if (tShapeHit < t_min)
 		{
 			tShapeHit = t1;
 			if (tShapeHit > t_max)
@@ -75,7 +75,7 @@ namespace shape::procedural
 		rec.normal = normalize(cross(dpdu, dpdv));
 		rec.mat_ptr = mat_ptr;
 
-		return false;
+		return true;
 	}
 
 	bool paraboloid::bounding_box(double time0, double time1, aabb &output_box) const
