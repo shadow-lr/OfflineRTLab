@@ -8,7 +8,7 @@ Part of the code reference from Peter Shirley’s [Ray Tracing mini-books](https
 - Support loading obJ model
 - Multithreaded rendering using Openmp
 - Support rendering display progress bar
-- Add some shape(cylinder, disk)
+- Add some shape(cylinder, disk, cone, paraboloid, hyperboloid) from pbrt
 
 ## Result
 <img src="./result/cornell-box.png" alt="cornell-box">
