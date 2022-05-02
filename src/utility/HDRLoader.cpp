@@ -173,7 +173,7 @@ bool decrunch(RGBE *scanline, int len, FILE *file)
 {
 	int i, j;
 
-	//判断是否大于两字节
+	// Check whether it is larger than two bytes
 	if (len < MINELEN || len > MAXELEN)
 		return oldDecrunch(scanline, len, file);
 

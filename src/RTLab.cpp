@@ -85,8 +85,6 @@ void RTLab::Render()
 	// time interval to update the progress
 	float time_interval = 0.5;
 
-	int key = 0;
-
 	#pragma omp parallel for
 	for (int j = extent.height - 1; j >= 0; --j)
 	{
@@ -111,24 +109,7 @@ void RTLab::Render()
 		}
 	}
 
-	std::ofstream filestream("skybox_show.png");
-
-	// Render
-	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
-
-	for (int j = extent.height - 1; j >= 0; --j)
-	{
-		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
-		for (int i = 0; i < extent.width; ++i)
-		{
-			filestream
-				<< int(color_table[j][i].e[0]) << ' '
-				<< int(color_table[j][i].e[1]) << ' '
-				<< int(color_table[j][i].e[2]) << '\n';
-		}
-	}
-
-	filestream.close();
+	output2file();
 
 	const auto stop = std::chrono::high_resolution_clock::now();
 	const auto elapsed = std::chrono::duration<float, std::chrono::seconds::period>(stop - start).count();
@@ -214,4 +195,28 @@ void RTLab::resize_table()
 		tab.resize(extent.width + 1);
 
 	color_table_raw.resize(extent.width * extent.height);
+}
+
+void RTLab::output2file()
+{
+	auto &extent = GetExtent();
+
+	std::ofstream filestream(output_name.c_str());
+
+	// Render
+	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
+
+	for (int j = extent.height - 1; j >= 0; --j)
+	{
+		std::cerr << "\routput remaining: " << j << ' ' << std::flush;
+		for (int i = 0; i < extent.width; ++i)
+		{
+			filestream
+				<< int(color_table[j][i].e[0]) << ' '
+				<< int(color_table[j][i].e[1]) << ' '
+				<< int(color_table[j][i].e[2]) << '\n';
+		}
+	}
+
+	filestream.close();
 }

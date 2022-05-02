@@ -51,7 +51,9 @@ public:
 		double u = (PI + std::atan(dir.z() / dir.x())) * INV_2PI;
 		double v = acos(dir.y()) * INV_PI;
 
-		return tex_ptr->value(u, v, vec3(0));
+		const static vec3 zero = vec3(0);
+
+		return tex_ptr->value(u, v, zero);
 	}
 
 public:

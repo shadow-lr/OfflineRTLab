@@ -52,13 +52,16 @@ public:
 
 	void write_color_table(color pixel_color, int height, int width);
 
+	void output2file();
 	void resize_table();
 	void update_process(float progress, int finish_num, int all_num, int per_thread_num);
 
-	// improve
-	void reset_scene(scene&& new_scene);
+	// Improve
+	void reset_scene(scene &&new_scene);
 
-	/**************Getter**************/
+	void set_output_name(const char* name) { output_name = name; }
+
+	// Getter
 	const hittable_list &GetWorld() const { return m_scene->GetObjects(); }
 	const hittable_list &GetLights() const { return m_scene->GetLights(); }
 	const window_extent &GetExtent() const { return m_scene->GetExtent(); }
@@ -72,9 +75,11 @@ private:
 	static int thread_finish_count[thread_num + 1];
 
 	// render
-	int max_depth = 20;
-	int samples_per_pixel = 1000;
+	int max_depth = 10;
+	int samples_per_pixel = 50;
 
 	std::vector<std::vector<color>> color_table;
 	std::vector<color> color_table_raw;
+
+	std::string output_name = "output.ppm";
 };

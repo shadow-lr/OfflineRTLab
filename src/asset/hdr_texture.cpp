@@ -7,6 +7,10 @@ hdr_texture::hdr_texture(const char *filename)
 	{
 		std::cerr << "failed to open hdr texture\n";
 	}
+	else
+	{
+		std::cout << "success load hdr texture : " << filename << "\n";
+	}
 }
 
 color hdr_texture::value(double u, double v, const point3 &p) const
