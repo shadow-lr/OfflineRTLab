@@ -11,4 +11,5 @@ public:
 	static scene test_ball();
 	static scene dark1();
 	static scene shape_show();
+	static scene skybox_show();
 };

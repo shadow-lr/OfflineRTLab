@@ -4,6 +4,7 @@
 #include "asset/scene.h"
 #include "asset/image_texture.h"
 #include "asset/skybox.h"
+#include "asset/hdr_texture.h"
 
 #include "geometry/translate.h"
 #include "geometry/rotate.h"
@@ -250,3 +251,22 @@ scene scene_list::shape_show()
 	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
+
+scene scene_list::skybox_show()
+{
+	// skybox
+	hittable_list objects, lights;
+	objects.add(make_shared<sphere>(vec3(0, 1, 0), 2.0, make_shared<dielectric>(1.5)));
+
+	double aspect_ratio = 16.0 / 9.0;
+
+	camera cam;
+	cam.reset(vec3(0, 3, 10), vec3(0, 1, 0), vec3(0, 1, 0), 40, aspect_ratio, 0.02, 15.0);
+
+	window_extent extent(800, aspect_ratio);
+
+	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/sunset.hdr"));
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
+}
+

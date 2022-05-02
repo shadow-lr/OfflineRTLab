@@ -5,6 +5,6 @@ int main()
 {
 	RTLab lab;
 
-	lab.reset_scene(scene_list::shape_show());
+	lab.reset_scene(scene_list::skybox_show());
 	lab.Render();
 }

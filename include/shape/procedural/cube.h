@@ -3,6 +3,8 @@
 #include "geometry/object.h"
 #include "square.h"
 
+#include <vector>
+
 namespace shape::procedural
 {
 	class cube : public object

@@ -111,7 +111,7 @@ void RTLab::Render()
 		}
 	}
 
-	std::ofstream filestream("shape_show_test_final_rotate.png");
+	std::ofstream filestream("skybox_show.png");
 
 	// Render
 	filestream << "P3\n" << extent.width << ' ' << extent.height << "\n255\n";
