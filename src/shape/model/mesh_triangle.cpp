@@ -81,13 +81,13 @@ namespace shape::model
 								 mesh.Vertices[i + j].Position.Y,
 								 mesh.Vertices[i + j].Position.Z);
 
-				vert.e[0] *= model[0];
-				vert.e[1] *= model[5];
-				vert.e[2] *= model[10];
+				vert[0] *= model[0];
+				vert[1] *= model[5];
+				vert[2] *= model[10];
 
-				vert.e[0] += model[3];
-				vert.e[1] += model[7];
-				vert.e[2] += model[11];
+				vert[0] += model[3];
+				vert[1] += model[7];
+				vert[2] += model[11];
 
 				face_vertices[j] = vert;
 				min_vert = vec3(std::min(min_vert.x(), vert.x()),
@@ -152,13 +152,13 @@ namespace shape::model
 									static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 2]));
 
 
-					pos.e[0] *= scale[0];
-					pos.e[1] *= scale[1];
-					pos.e[2] *= scale[2];
+					pos[0] *= scale[0];
+					pos[1] *= scale[1];
+					pos[2] *= scale[2];
 
-					pos.e[0] += translate[0];
-					pos.e[1] += translate[1];
-					pos.e[2] += translate[2];
+					pos[0] += translate[0];
+					pos[1] += translate[1];
+					pos[2] += translate[2];
 
 					vertices[v].pos = pos;
 				}
@@ -182,14 +182,14 @@ namespace shape::model
 					if (idx.normal_index >= 0)
 					{
 						// u
-						vertices[v].tex_coord.e[0] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 0]);
+						vertices[v].tex_coord[0] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 0]);
 						// v
-						vertices[v].tex_coord.e[1] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 1]);
+						vertices[v].tex_coord[1] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 1]);
 					}
 					for (int i = 0; i < 3; i++)
 					{
-						if (vertices[v].normal.e[i] == -0.0)
-							vertices[v].normal.e[i] = 0.0;
+						if (vertices[v].normal[i] == -0.0)
+							vertices[v].normal[i] = 0.0;
 					}
 				}
 

@@ -159,6 +159,7 @@ scene scene_list::dark1()
 
 	// light
 	auto light = make_shared<diffuse_light>(color(7, 7, 7));
+//	printf("light, x = %f, %f, %f", light.)
 	objects.add(make_shared<flip_face>(make_shared<cube>(vec3(0.4, 6, 1.0), 2.5, light)));
 
 	double aspect_ratio = 16.0 / 9.0;
@@ -167,7 +168,6 @@ scene scene_list::dark1()
 	cam.reset(vec3(4, 6, 15), vec3(0, 1, 0), vec3(0, 1, 0), 20.0, aspect_ratio, 0.0, 15.0);
 
 	window_extent extent(800, aspect_ratio);
-//	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
 	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/sunset.hdr"));
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));

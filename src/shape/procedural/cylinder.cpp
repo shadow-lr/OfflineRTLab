@@ -44,8 +44,8 @@ namespace shape::procedural
 		// Refine cylinder intersection point
 		double hit_rad = std::sqrt(temp_point.x() * temp_point.x() + temp_point.y() * temp_point.y());
 		double hit_rad_inv = 1.0 / hit_rad;
-		temp_point.e[0] *= radius * hit_rad_inv;
-		temp_point.e[1] *= radius * hit_rad_inv;
+		temp_point[0] *= radius * hit_rad_inv;
+		temp_point[1] *= radius * hit_rad_inv;
 
 		double phi = std::atan2(temp_point.y(), temp_point.x());
 		if (phi < 0)
@@ -63,8 +63,8 @@ namespace shape::procedural
 
 			double hit_rad = std::sqrt(temp_point.x() * temp_point.x() + temp_point.y() * temp_point.y());
 			double hit_rad_inv = 1.0 / hit_rad;
-			temp_point.e[0] *= radius * hit_rad_inv;
-			temp_point.e[1] *= radius * hit_rad_inv;
+			temp_point[0] *= radius * hit_rad_inv;
+			temp_point[1] *= radius * hit_rad_inv;
 
 			phi = std::atan2(temp_point.y(), temp_point.x());
 			if (phi < 0)	phi += TWO_PI;

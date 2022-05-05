@@ -54,3 +54,13 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 	srec.specular_ray = ray(rec.p, direction, r_in.time());
 	return true;
 }
+
+bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const
+{
+	return material::scatter(r_in, rec, srec);
+}
+
+double microfacet_reflection::scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const
+{
+	return material::scattering_pdf(r_in, rec, scattered);
+}

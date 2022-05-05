@@ -39,7 +39,7 @@ namespace shape::procedural
 		double v = (radius - rHit) / (radius - inner_radius);
 		vec3 dpdu(-phi_max * pHit.y(), phi_max * pHit.x(), 0);
 		vec3 dpdv = vec3(pHit.x(), pHit.y(), 0) * (inner_radius - radius) / rHit;
-		pHit.e[2] = height;
+		pHit[2] = height;
 
 		rec.t = tShapeHit;
 		rec.p = r_in.at(tShapeHit);

@@ -40,11 +40,11 @@ color RTLab::ray_color(const ray &r,
 	ray scattered = ray(rec.p, p.generate(), r.time());
 	auto pdf_val = p.value(scattered.direction());
 
-	// Monte-Carlo BRDF
-	return emitted
-		+ srec.attenuation * rec.mat_ptr->scattering_pdf(r, rec, scattered)
-			* ray_color(scattered, env_skybox, world, lights, depth - 1) / pdf_val / russian_roulette;
+	color Le = emitted;
+	color Li = srec.attenuation * rec.mat_ptr->scattering_pdf(r, rec, scattered) * ray_color(scattered, env_skybox, world, lights, depth - 1) / pdf_val / russian_roulette;
 
+	// Monte-Carlo BRDF
+	return Le + Li;
 }
 
 void RTLab::reset_scene(scene&& new_scene)
@@ -134,15 +134,7 @@ void RTLab::write_color_table(color pixel_color, int height, int width)
 	g = sqrt(scale * g);
 	b = sqrt(scale * b);
 
-	color_table[height][width].e[0] = 256 * clamp(r, 0.001, 0.999);
-	color_table[height][width].e[1] = 256 * clamp(g, 0.001, 0.999);
-	color_table[height][width].e[2] = 256 * clamp(b, 0.001, 0.999);
-
-	// use for opencv
-	color_table_raw[height * width + width].e[0] = color_table[height][width].e[0];
-	color_table_raw[height * width + width].e[1] = color_table[height][width].e[1];
-	color_table_raw[height * width + width].e[2] = color_table[height][width].e[2];
-
+	color_table[height][width] = vec3(256 * clamp(r, 0.001, 0.999), 256 * clamp(g, 0.001, 0.999), 256 * clamp(b, 0.001, 0.999));
 }
 
 void RTLab::update_process(float progress, int finish_num, int all_num, int per_thread_num)
@@ -212,9 +204,9 @@ void RTLab::output2file()
 		for (int i = 0; i < extent.width; ++i)
 		{
 			filestream
-				<< int(color_table[j][i].e[0]) << ' '
-				<< int(color_table[j][i].e[1]) << ' '
-				<< int(color_table[j][i].e[2]) << '\n';
+				<< int(color_table[j][i][0]) << ' '
+				<< int(color_table[j][i][1]) << ' '
+				<< int(color_table[j][i][2]) << '\n';
 		}
 	}
 

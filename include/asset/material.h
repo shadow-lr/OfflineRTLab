@@ -109,3 +109,11 @@ public:
 public:
     shared_ptr<texture> albedo;
 };
+
+
+class microfacet_reflection : public material
+{
+public:
+	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
+	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override;
+};
