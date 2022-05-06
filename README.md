@@ -16,11 +16,10 @@ Part of the code reference from Peter Shirley’s [Ray Tracing mini-books](https
 
 <img src="./result/book2-final.png" alt="book2-final-scene">
 
-scene's data refer to project [Andromeda](https://github.com/moranzcw/Andromeda)
+scene's data refer to the project [Andromeda](https://github.com/moranzcw/Andromeda)
 
-<img src="./result/dark1.png" alt="dark1-scene">
+<img src="./result/dark1_hdr_skybox_3540.png" alt="dark1-scene">
 
 <img src="./result/shape_show.png" alt="shape_show-scene">
 
-hdr skybox
 <img src="./result/hdr_skybox.png" alt="hdr_skybox">
