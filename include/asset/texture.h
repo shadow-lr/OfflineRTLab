@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rtweekend.h"
+#include "math/vec3.h"
 
 class texture
 {

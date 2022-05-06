@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../rtweekend.h"
+#include "geometry/ray.h"
 
 class aabb
 {

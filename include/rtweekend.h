@@ -84,8 +84,3 @@ inline bool quadratic(double a, double b, double c, double& t0, double& t1)
 
 	return true;
 }
-
-// Common Headers
-#include "geometry/ray.h"
-#include "math/vec3.h"
-
