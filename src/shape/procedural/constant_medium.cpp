@@ -60,7 +60,7 @@ namespace shape::procedural
 
 		rec.normal = vec3(1, 0, 0);  // arbitrary
 		rec.front_face = true;     // also arbitrary
-		rec.mat_ptr = phase_function;
+		rec.mat_ptr = phase_function.get();
 
 		return true;
 	}

@@ -1,5 +1,4 @@
 #include "RTLab.h"
-//#include <opencv2/opencv.hpp>
 
 int RTLab::thread_finish_count[thread_num + 1] = {0};
 

@@ -31,7 +31,7 @@ namespace shape::procedural
 		rec.p = r.at(rec.t);
 		auto outward_normal = (rec.p - center(r.time())) / radius;
 		rec.set_face_normal(r, outward_normal);
-		rec.mat_ptr = mat_ptr;
+		rec.mat_ptr = mat_ptr.get();
 		return true;
 	}
 

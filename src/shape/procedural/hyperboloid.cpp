@@ -102,7 +102,7 @@ namespace shape::procedural
 		rec.u = u;
 		rec.v = v;
 		rec.normal = normalize(cross(dpdu, dpdv));
-		rec.mat_ptr = mat_ptr;
+		rec.mat_ptr = mat_ptr.get();
 
 		return true;
 	}

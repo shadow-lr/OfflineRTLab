@@ -80,7 +80,7 @@ namespace shape::procedural
 		rec.p = temp_point;
 		rec.u = u;
 		rec.v = v;
-		rec.mat_ptr = mat_ptr;
+		rec.mat_ptr = mat_ptr.get();
 
 		// Compute cylinder ∂n/∂u and ∂n/∂v
 		vec3 dpdu(-phi_max * temp_point.y(), phi_max * temp_point.x(), 0);

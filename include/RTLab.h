@@ -10,16 +10,8 @@
 #include "geometry/bvh.h"
 #include "geometry/pdf.h"
 
-#include "shape/procedural/sphere.h"
-#include "shape/procedural/aarect.h"
-#include "shape/procedural/box.h"
-#include "shape/procedural/moving_sphere.h"
-#include "shape/procedural/constant_medium.h"
-
 #include "asset/material.h"
 #include "asset/camera.h"
-#include "asset/noise_texture.h"
-#include "asset/image_texture.h"
 #include "asset/light.h"
 #include "asset/scene.h"
 

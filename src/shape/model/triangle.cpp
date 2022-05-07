@@ -63,7 +63,7 @@ namespace shape::model
 		rec.u = vertices[0].tex_coord.x() * (1 - u - v) + vertices[1].tex_coord.x() * u + vertices[2].tex_coord.x() * v;
 		rec.v = vertices[0].tex_coord.y() * (1 - u - v) + vertices[1].tex_coord.y() * u + vertices[2].tex_coord.y() * v;
 		rec.normal = vertices[0].normal * (1 - u - v) + vertices[1].normal * u + vertices[2].normal * v;
-		rec.mat_ptr = mat_ptr;
+		rec.mat_ptr = mat_ptr.get();
 
 		return true;
 	}

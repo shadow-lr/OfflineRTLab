@@ -23,7 +23,7 @@ namespace shape::procedural
 		// todo: may cause some error(z )
 		auto outward_normal = vec3(0, 0, 1);
 		rec.set_face_normal(r, outward_normal);
-		rec.mat_ptr = mp;
+		rec.mat_ptr = mp.get();
 		rec.p = r.at(t);
 		return true;
 	}
@@ -49,10 +49,10 @@ namespace shape::procedural
 		rec.v = (z - z0) / (z1 - z0);
 		rec.t = t;
 
-		// 默认y轴向上的法线
+		// Default y-axis up normal
 		auto outward_normal = vec3(0, 1, 0);
 		rec.set_face_normal(r, outward_normal);
-		rec.mat_ptr = mp;
+		rec.mat_ptr = mp.get();
 		rec.p = r.at(t);
 		return true;
 	}
@@ -99,7 +99,7 @@ namespace shape::procedural
 		rec.t = t;
 		auto outward_normal = vec3(1, 0, 0);
 		rec.set_face_normal(r, outward_normal);
-		rec.mat_ptr = mp;
+		rec.mat_ptr = mp.get();
 		rec.p = r.at(t);
 		return true;
 	}
