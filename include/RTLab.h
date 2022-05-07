@@ -27,15 +27,14 @@
 class RTLab final
 {
 public:
-	RTLab() : RTLab(800, 600) {}
-	RTLab(window_extent extent_)
+	RTLab() : RTLab(window_extent(800, 600)) {}
+	explicit RTLab(const window_extent& extent_)
 	{
 		color_table.resize(extent_.height + 1);
 		for (auto &tab : color_table)
 			tab.resize(extent_.width + 1);
 		color_table_raw.resize(extent_.width * extent_.height);
 	}
-	RTLab(int width, int height) : RTLab(window_extent(width, height)) {}
 
 	// Render
 	void Render();
@@ -46,7 +45,7 @@ public:
 
 	void output2file();
 	void resize_table();
-	void update_process(float progress, int finish_num, int all_num, int per_thread_num);
+	void update_process(int finish_num, int all_num);
 
 	// Improve
 	void reset_scene(scene &&new_scene);
@@ -64,11 +63,10 @@ private:
 	shared_ptr<scene> m_scene;
 
 	static const int thread_num = 12;
-	static int thread_finish_count[thread_num + 1];
 
 	// render
 	int max_depth = 10;
-	int samples_per_pixel = 300;
+	int samples_per_pixel = 5;
 
 	std::vector<std::vector<color>> color_table;
 	std::vector<color> color_table_raw;

@@ -1,7 +1,5 @@
 #include "RTLab.h"
 
-int RTLab::thread_finish_count[thread_num + 1] = {0};
-
 color RTLab::ray_color(const ray &r,
 					   const skybox& env_skybox,
 					   const object &world,
@@ -79,7 +77,6 @@ void RTLab::Render()
 
 	int finish_num = 0;
 	int all_num = extent.height * extent.width;
-	int per_thread_num = all_num / thread_num;
 
 	// time interval to update the progress
 	float time_interval = 0.5;
@@ -91,8 +88,6 @@ void RTLab::Render()
 		{
 			scan_calculate_color(j, i);
 
-			// process
-			thread_finish_count[omp_get_thread_num()] += 1;
 			#pragma omp critical
 			{
 				finish_num += 1;
@@ -101,7 +96,7 @@ void RTLab::Render()
 				auto interval = std::chrono::duration_cast<std::chrono::seconds>(clock_now - clock_start).count();
 				if (interval >= time_interval)
 				{
-					update_process(finish_num / (float)all_num, finish_num, all_num, per_thread_num);
+					update_process(finish_num, all_num);
 					clock_start = clock_now;
 				}
 			}
@@ -136,43 +131,10 @@ void RTLab::write_color_table(color pixel_color, int height, int width)
 	color_table[height][width] = vec3(256 * clamp(r, 0.001, 0.999), 256 * clamp(g, 0.001, 0.999), 256 * clamp(b, 0.001, 0.999));
 }
 
-void RTLab::update_process(float progress, int finish_num, int all_num, int per_thread_num)
+void RTLab::update_process(int finish_num, int all_num)
 {
 	system("cls");
-	printf("\n");
-	for (int i = 0; i < thread_num; ++i)
-	{
-		if (i % 4 == 0 && i != 0) printf("\n");
-
-		printf("%3d  [", i);
-		float curThreadProgress = thread_finish_count[i] / (float)per_thread_num;
-		int present = int(curThreadProgress * 100.0);
-		int per_present_flag = 10;
-		int flag_num = present / per_present_flag;
-
-		for (int j = 0; j < per_present_flag; ++j)
-		{
-			if (j < flag_num) printf("|");
-			else printf(" ");
-		}
-
-		printf("%-3.1f%%]", (fmin(curThreadProgress * 100.0, 100.0)));
-		printf("\t");
-	}
-	printf("\nAll  [");
-
-	int total_present = int(progress * 100.0);
-	int per_present_flag = 10;
-	int flag_num = total_present / per_present_flag;
-
-	for (int j = 0; j < per_present_flag; ++j)
-	{
-		if (j < flag_num) printf("|");
-		else printf(" ");
-	}
-
-	printf("%d/%d]", finish_num, all_num);
-	printf("\t");
+	printf("[%d/%d]\t", finish_num, all_num);
 	printf("Tasks: %d; %d running", thread_num, omp_get_num_procs());
 
 	fflush(stdout);

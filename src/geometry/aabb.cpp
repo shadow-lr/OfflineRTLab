@@ -13,6 +13,26 @@ bool aabb::hit(const ray &r, double t_min, double t_max) const
 	return t_max > t_min;
 }
 
+vec3 aabb::offset(const vec3 &p) const
+{
+	vec3 o = p - min();
+	o[0] /= (max().x() - min().x() + 0.001);
+	o[1] /= (max().y() - min().y() + 0.001);
+	o[2] /= (max().z() - min().z() + 0.001);
+	return o;
+}
+
+int aabb::max_extent() const
+{
+	vec3 d = diagonal();
+	if (d.x() > d.y() && d.x() > d.z())
+		return 0;
+	else if (d.y() > d.z())
+		return 1;
+	else
+		return 2;
+}
+
 aabb surrounding_box(const aabb &box0, const aabb &box1)
 {
 	point3 small(fmin(box0.min().x(), box1.min().x()),
@@ -24,4 +44,11 @@ aabb surrounding_box(const aabb &box0, const aabb &box1)
 			   fmax(box0.max().z(), box1.max().z()));
 
 	return aabb(small, big);
+}
+
+void printf_info(aabb &box)
+{
+	const auto& minpoint = box.min();
+	const auto& maxpoint = box.max();
+	printf("aabb: min %f, %f, %f  max %f, %f, %f\n", minpoint.x(), minpoint.y(), minpoint.z(), maxpoint.x(), maxpoint.y(), maxpoint.z());
 }

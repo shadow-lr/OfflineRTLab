@@ -1,6 +1,6 @@
 #pragma once
 
-#define RTLAB_SIMD_OPTIMIZE
+//#define RTLAB_SIMD_OPTIMIZE
 #ifdef RTLAB_SIMD_OPTIMIZE
 #include "vec3_avx.h"
 #else

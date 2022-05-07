@@ -109,7 +109,7 @@ namespace shape::model
 //		for (auto &tri : triangles)
 //			area += tri.get_area();
 
-		bvh_tree = bvh_node(list, 0, 0);
+		bvh_tree = bvh_node(list, 0, 0, bvh_node::SplitMethod::NAIVE);
 	}
 
 	void mesh_triangle::load_tiny_obj(const std::string &path, shared_ptr<material> mt, vec3 translate, vec3 scale)
@@ -147,9 +147,9 @@ namespace shape::model
 				{
 					tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
 
-					vec3 pos = vec3(static_cast<float>(attrib.vertices[idx.vertex_index * 3]),
-									static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 1]),
-									static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 2]));
+					vec3 pos = vec3(static_cast<double>(attrib.vertices[idx.vertex_index * 3]),
+									static_cast<double>(attrib.vertices[idx.vertex_index * 3 + 1]),
+									static_cast<double>(attrib.vertices[idx.vertex_index * 3 + 2]));
 
 
 					pos[0] *= scale[0];
@@ -169,9 +169,9 @@ namespace shape::model
 					// todo: consider the cast of non-conforming scaling
 					if (idx.normal_index >= 0)
 					{
-						vertices[v].normal = normalize(vec3(static_cast<float>(attrib.normals[idx.normal_index * 3]),
-														 static_cast<float>(attrib.normals[idx.normal_index * 3 + 1]),
-														 static_cast<float>(attrib.normals[idx.normal_index * 3 + 2])));
+						vertices[v].normal = normalize(vec3(static_cast<double>(attrib.normals[idx.normal_index * 3]),
+														 static_cast<double>(attrib.normals[idx.normal_index * 3 + 1]),
+														 static_cast<double>(attrib.normals[idx.normal_index * 3 + 2])));
 					}
 					else
 					{
@@ -182,9 +182,9 @@ namespace shape::model
 					if (idx.normal_index >= 0)
 					{
 						// u
-						vertices[v].tex_coord[0] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 0]);
+						vertices[v].tex_coord[0] = static_cast<double>(attrib.texcoords[idx.texcoord_index * 2 + 0]);
 						// v
-						vertices[v].tex_coord[1] = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 1]);
+						vertices[v].tex_coord[1] = static_cast<double>(attrib.texcoords[idx.texcoord_index * 2 + 1]);
 					}
 					for (int i = 0; i < 3; i++)
 					{
@@ -204,7 +204,7 @@ namespace shape::model
 
 		std::cout << "success load obj : " << path.c_str() << "\n";
 
-		bvh_tree = bvh_node(list, 0, 0);
+		bvh_tree = bvh_node(list, 0, 0, bvh_node::SplitMethod::SAH);
 	}
 }
 
