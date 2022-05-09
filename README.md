@@ -10,6 +10,7 @@ Part of the code reference from Peter Shirley’s [Ray Tracing mini-books](https
 - Support rendering display progress bar
 - Add some shape(cylinder, disk, cone, paraboloid, hyperboloid) from pbrt
 - Support the HDRI map the sky boxes
+- Bounding Volume Hierarchy with Surface Area Heuristic
 
 ## Result
 <img src="./result/cornell-box.png" alt="cornell-box">
