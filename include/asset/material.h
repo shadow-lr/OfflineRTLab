@@ -3,7 +3,8 @@
 #include "geometry/pdf.h"
 #include "geometry/object.h"
 
-#include "asset/texture.h"
+#include "texture.h"
+#include "microfacedist.h"
 
 struct hit_record;
 
@@ -75,12 +76,12 @@ public:
 class dielectric : public material
 {
 public:
-	dielectric(double index_of_refraction) : ir(index_of_refraction) {}
+	dielectric(double index_of_refraction) : ior(index_of_refraction) {}
 
 	virtual bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
 
 public:
-	double ir;  // Index Of Refraction
+	double ior;  // Index Of Refraction
 private:
 	// Christophe Schlick
 	static double reflectance(double cosine, double ref_idx)
@@ -114,6 +115,15 @@ public:
 class microfacet_reflection : public material
 {
 public:
+	microfacet_reflection(const shared_ptr<texture> &albedo,
+						  const shared_ptr<microfacet_distribution> &distribution,
+						  double ior);
+
 	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
 	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override;
+
+public:
+	shared_ptr<texture> albedo;
+	shared_ptr<microfacet_distribution> distribution;
+	double ior;
 };

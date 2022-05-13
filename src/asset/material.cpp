@@ -31,7 +31,7 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 	srec.is_specular = true;
 	srec.pdf_ptr = nullptr;
 	srec.attenuation= color(1.0, 1.0, 1.0);
-	double refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
+	double refraction_ratio = rec.front_face ? (1.0 / ior) : ior;
 
 	vec3 unit_direction = normalize(r_in.direction());
 
@@ -53,6 +53,13 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 
 	srec.specular_ray = ray(rec.p, direction, r_in.time());
 	return true;
+}
+
+microfacet_reflection::microfacet_reflection(const shared_ptr<texture> &albedo,
+											 const shared_ptr<microfacet_distribution> &distribution,
+											 double ior) : albedo(albedo), distribution(distribution), ior(ior)
+{
+
 }
 
 bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const

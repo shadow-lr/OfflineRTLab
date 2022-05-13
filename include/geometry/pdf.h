@@ -4,7 +4,8 @@
 #include "math/vec3.h"
 #include "geometry/object.h"
 
-class pdf {
+class pdf
+{
 public:
 	virtual ~pdf() {}
 
@@ -39,36 +40,42 @@ public:
 class hittable_pdf : public pdf
 {
 public:
-	hittable_pdf(const object& p, const point3 &origin) : ptr(p), o(origin) {}
+	hittable_pdf(const object &p, const point3 &origin) : ptr(p), o(origin) {}
 
 	~hittable_pdf() override {}
 
-	virtual double value(const vec3 &direction) const override {
+	virtual double value(const vec3 &direction) const override
+	{
 		return ptr.pdf_value(o, direction);
 	}
 
-	vec3 generate() const override {
+	vec3 generate() const override
+	{
 		return ptr.random(o);
 	}
 
 public:
 	point3 o;
-	const object& ptr;
+	const object &ptr;
 };
 
 // a mixture density of the cosine and light sampling
-class mixture_pdf : public pdf {
+class mixture_pdf : public pdf
+{
 public:
-	mixture_pdf(shared_ptr<pdf> p0, shared_ptr<pdf> p1) {
+	mixture_pdf(shared_ptr<pdf> p0, shared_ptr<pdf> p1)
+	{
 		p[0] = p0;
 		p[1] = p1;
 	}
 	~mixture_pdf() override { p->reset(); }
-	virtual double value(const vec3 &direction) const override {
+	virtual double value(const vec3 &direction) const override
+	{
 		return 0.5 * p[0]->value(direction) + 0.5 * p[1]->value(direction);
 	}
 
-	virtual vec3 generate() const override {
+	virtual vec3 generate() const override
+	{
 		if (random_double() < 0.5)
 			return p[0]->generate();
 		else
@@ -77,4 +84,17 @@ public:
 
 public:
 	shared_ptr<pdf> p[2];
+};
+
+class micro_pdf : public pdf
+{
+public:
+	double value(const vec3 &direction) const override
+	{
+		return 0;
+	}
+	vec3 generate() const override
+	{
+		return vec3();
+	}
 };
