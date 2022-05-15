@@ -6,6 +6,14 @@
 #include "texture.h"
 #include "microfacedist.h"
 
+// Christophe Schlick
+static double schlick_fresnel(double cosine, double ref_idx)
+{
+	double r0 = (1 - ref_idx) / (1 + ref_idx);
+	r0 = r0 * r0;
+	return r0 + (1 - r0) * pow((1 - cosine), 5);
+}
+
 struct hit_record;
 
 struct scatter_record
@@ -82,14 +90,6 @@ public:
 
 public:
 	double ior;  // Index Of Refraction
-private:
-	// Christophe Schlick
-	static double reflectance(double cosine, double ref_idx)
-	{
-		double r0 = (1 - ref_idx) / (1 + ref_idx);
-		r0 = r0 * r0;
-		return r0 + (1 - r0) * pow((1 - cosine), 5);
-	}
 };
 
 class isotropic : public material
@@ -102,8 +102,8 @@ public:
     // picks a uniform random direction
 	virtual bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override
 	{
-		//        scattered = ray(rec.p, random_in_unit_sphere(), r_in.time());
-		//        attenuation = albedo->value(rec.u, rec.v, rec.p);
+		// scattered = ray(rec.p, random_in_unit_sphere(), r_in.time());
+		// attenuation = albedo->value(rec.u, rec.v, rec.p);
 		return true;
 	}
 
@@ -116,6 +116,10 @@ class microfacet_reflection : public material
 {
 public:
 	microfacet_reflection(const shared_ptr<texture> &albedo,
+						  const shared_ptr<microfacet_distribution> &distribution,
+						  double ior);
+
+	microfacet_reflection(color c,
 						  const shared_ptr<microfacet_distribution> &distribution,
 						  double ior);
 

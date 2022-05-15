@@ -42,7 +42,7 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 	vec3 direction;
 
 	// if n1 / n2 * sin(θ) > 1, then total reflection, conversely refract
-	if (refraction_ratio * sin_theta > 1.0 || reflectance(cos_theta, refraction_ratio) > random_double())
+	if (refraction_ratio * sin_theta > 1.0 || schlick_fresnel(cos_theta, refraction_ratio) > random_double())
 	{
 		direction = reflect(unit_direction, rec.normal);
 	}
@@ -62,12 +62,38 @@ microfacet_reflection::microfacet_reflection(const shared_ptr<texture> &albedo,
 
 }
 
+microfacet_reflection::microfacet_reflection(color c,
+											 const shared_ptr<microfacet_distribution> &distribution,
+											 double ior) : albedo(make_shared<solid_color>(c)), distribution(distribution), ior(ior)
+{
+
+}
+
 bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const
 {
-	return material::scatter(r_in, rec, srec);
+	srec.is_specular = false;
+	srec.attenuation = albedo->value(rec.u, rec.v, rec.p);
+	srec.pdf_ptr = make_shared<cosine_pdf>(rec.normal);
+	return true;
 }
 
 double microfacet_reflection::scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const
 {
-	return material::scattering_pdf(r_in, rec, scattered);
+	const vec3 wi = normalize(r_in.direction());
+	const vec3 wo = normalize(scattered.direction());
+	double Ndotwo = dot(rec.normal, wo);
+	double Ndotwi = dot(rec.normal, wi);
+	if (Ndotwo * Ndotwi <= 0)
+		return 0;
+	else
+	{
+		const vec3 wh = normalize(wi + wo);
+		double F = schlick_fresnel(Ndotwo, ior);
+		double G = distribution->G(wo, wi);
+		double D = distribution->D(wh);
+
+		printf("D = %f F = %f G = %f\n", D, F, G);
+		return D * F * G / (4 * Ndotwo * Ndotwi);
+	}
 }
+

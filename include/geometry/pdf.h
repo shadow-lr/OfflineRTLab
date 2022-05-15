@@ -89,12 +89,33 @@ public:
 class micro_pdf : public pdf
 {
 public:
-	double value(const vec3 &direction) const override
+	micro_pdf(const vec3 &w, double roughness, vec3 &wo_)
 	{
-		return 0;
+		wo = normalize(wo_);
+		a2 = roughness * roughness * roughness * roughness;
+		uvw.build_from_w(w);
 	}
-	vec3 generate() const override
+	virtual double value(const vec3 &direction) const override
 	{
-		return vec3();
+		double cosTheta = dot(normalize(direction), uvw.w());;
+		double expval = (a2 - 1.0f) * cosTheta + 1;
+		double D = a2 / (PI * expval * expval);
+		// vec3 wi = wo - 2.0f * dot(uvw.w(), direction) * uvw.w();
+		return (D / 4);
 	}
+	virtual vec3 generate() const override
+	{
+		double r0 = random_double();
+		double theta = std::acos(std::sqrt((1 - r0) / ((a2 - 1) * r0 + 1)));
+		double phi = 2 * PI * random_double();
+		vec3 wm = vec3(std::sin(theta) * std::cos(phi),
+					   std::cos(theta),
+					   std::sin(theta) * std::sin(phi));
+		wm = normalize(wm);
+		vec3 wi = 2.0f * dot(wo, wm) * wm - wo;
+		return (uvw.local(wi));
+	}
+	onb uvw;
+	double a2;
+	vec3 wo;
 };
