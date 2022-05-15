@@ -48,8 +48,11 @@ public:
 	{
 		vec3 dir = normalize(r_in.direction());
 
-		double u = (PI + std::atan(dir.z() / dir.x())) * INV_2PI;
-		double v = acos(dir.y()) * INV_PI;
+		double theta = acos(dir.y());
+		double phi = atan2(dir.z(), dir.x()) + PI;
+
+		double u = phi * INV_2PI;
+		double v = theta * INV_PI;
 
 		const static vec3 zero = vec3(0);
 
