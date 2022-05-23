@@ -111,6 +111,71 @@ public:
     shared_ptr<texture> albedo;
 };
 
+class oren_nayar : public material
+{
+public:
+	oren_nayar(color c, double sigma) : albedo(make_shared<solid_color>(c))
+	{
+		double sigma2 = sigma * sigma;
+		a = 1.0 - (sigma2 / (2.0 * (sigma2 + 0.33)));
+		b = 0.45 * sigma2 / (sigma2 + 0.09);
+	}
+
+	oren_nayar(shared_ptr<texture> albedo_, double sigma) : albedo(albedo_)
+	{
+		double sigma2 = sigma * sigma;
+		a = 1.0 - (sigma2 / (2.0 * (sigma2 + 0.33)));
+		b = 0.45 * sigma2 / (sigma2 + 0.09);
+	}
+
+	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override
+	{
+		srec.is_specular = false;
+		srec.attenuation = albedo->value(rec.u, rec.v, rec.p);
+		srec.pdf_ptr = make_shared<cosine_pdf>(rec.normal);
+		return true;
+	}
+
+	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override
+	{
+		vec3 wi = normalize(r_in.direction());
+		vec3 wo = normalize(scattered.direction());
+
+		double cosine = dot(rec.normal, wo);
+		if (cosine < 0)
+			cosine = 0;
+
+		double sinThetaI = SinTheta(wi);
+		double sinThetaO = SinTheta(wo);
+
+		double maxCos = 0;
+		if (sinThetaI > 1e-4 && sinThetaO > 1e-4)
+		{
+			double sinPhiI = SinPhi(wi);
+			double cosPhiI = CosPhi(wi);
+			double sinPhiO = SinPhi(wo);
+			double cosPhiO = CosPhi(wo);
+			double dCos = cosPhiI * cosPhiO + sinPhiI * sinPhiO;
+			maxCos = std::max(0.0, dCos);
+		}
+		double sinAlpha, tanBeta;
+		if (AbsCosTheta(wi) > AbsCosTheta(wo))
+		{
+			sinAlpha = sinThetaO;
+			tanBeta = sinThetaI / AbsCosTheta(wi);
+		}
+		else
+		{
+			sinAlpha = sinThetaI;
+			tanBeta = sinThetaO / AbsCosTheta(wo);
+		}
+
+		return ((a + b * maxCos * sinAlpha * tanBeta) * INV_PI * cosine);
+	}
+public:
+	shared_ptr<texture> albedo;
+	double a, b;
+};
 
 class microfacet_reflection : public material
 {

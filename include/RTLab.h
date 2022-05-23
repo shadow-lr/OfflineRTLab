@@ -66,7 +66,7 @@ private:
 
 	// render
 	int max_depth = 10;
-	int samples_per_pixel = 5;
+	int samples_per_pixel = 600;
 
 	std::vector<std::vector<color>> color_table;
 	std::vector<color> color_table_raw;

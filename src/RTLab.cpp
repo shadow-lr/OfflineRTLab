@@ -30,9 +30,9 @@ color RTLab::ray_color(const ray &r,
 			* ray_color(srec.specular_ray, env_skybox, world, lights, depth - 1) / russian_roulette;
 	}
 
-//	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
-//	mixture_pdf p(light_ptr, srec.pdf_ptr);
-	cosine_pdf p(rec.normal);
+	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
+	mixture_pdf p(light_ptr, srec.pdf_ptr);
+//	cosine_pdf p(rec.normal);
 
 	ray scattered = ray(rec.p, p.generate(), r.time());
 	auto pdf_val = p.value(scattered.direction());

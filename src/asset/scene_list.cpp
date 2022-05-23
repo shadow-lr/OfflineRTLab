@@ -5,6 +5,7 @@
 #include "asset/image_texture.h"
 #include "asset/skybox.h"
 #include "asset/hdr_texture.h"
+#include "asset/microfacedist.h"
 
 #include "geometry/translate.h"
 #include "geometry/rotate.h"
@@ -111,6 +112,16 @@ scene scene_list::test_ball()
 	auto glass = make_shared<dielectric>(1.5);
 	auto metal_sphere = make_shared<metal>(color(0.8, 0.8, 0.9), 0.0);
 
+	auto baseColor = vec3(1.0);
+	auto light = make_shared<diffuse_light>(baseColor * color(15, 15, 15));
+
+//	shared_ptr<microfacet_distribution> micro_dis = make_shared<trowbridge_reitz_distribution>(0.5, 0.5);
+//	auto micro_material = make_shared<microfacet_reflection>(color(0.5, 0.5, 0.5), micro_dis, 1.45);
+
+	objects.add(make_shared<flip_face>(make_shared<xz_rect>(213, 343, 227, 332, 554, light)));
+
+	lights.add(make_shared<xz_rect>(213, 343, 227, 332, 554, shared_ptr<material>()));
+
 	shared_ptr<object> mesh001 =
 		make_shared<mesh_triangle>("assets/models/test-ball/Mesh001.obj", grey, vec3(0.0571719, 0.213656, 0.0682078), vec3(0.482906));
 	shared_ptr<object> mesh002 =
@@ -131,7 +142,50 @@ scene scene_list::test_ball()
 
 	window_extent extent(800, aspect_ratio);
 
-	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(1, 1, 1));
+	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
+//	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/sunset.hdr"));
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
+}
+
+scene scene_list::dragon()
+{
+	hittable_list objects, lights;
+
+	auto grey = make_shared<oren_nayar>(color(.8, .8, .8), 20.0);
+
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh000.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh001.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh002.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh003.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh004.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh005.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh006.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh007.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh008.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh009.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh010.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh011.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh012.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh013.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh014.obj", grey));
+	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh015.obj", grey));
+
+	auto baseColor = vec3(1.0);
+	auto light = make_shared<diffuse_light>(baseColor * color(15, 15, 15));
+
+	objects.add(make_shared<flip_face>(make_shared<xz_rect>(-7.3, 2.5, -8.05, 1.57, 25, light)));
+
+	lights.add(make_shared<xz_rect>(-7.3, 2.5, -8.05, 1.57, 20, shared_ptr<material>()));
+
+	double aspect_ratio = 1.0;
+
+	camera cam;
+	cam.reset(vec3(-23.42553, 9.930375, 12.46296), vec3(0, 4, 0), vec3(0, 1, 0), 60.0, aspect_ratio, 0.0, 10.0);
+
+	window_extent extent(1620, aspect_ratio);
+
+	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
@@ -167,8 +221,8 @@ scene scene_list::dark1()
 	camera cam;
 	cam.reset(vec3(4, 6, 15), vec3(0, 1, 0), vec3(0, 1, 0), 20.0, aspect_ratio, 0.0, 15.0);
 
-	window_extent extent(800, aspect_ratio);
-	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/sunset.hdr"));
+	window_extent extent(3540, aspect_ratio);
+	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/peppermint_powerplant_4k.hdr"));
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
@@ -233,4 +287,3 @@ scene scene_list::skybox_show()
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
-

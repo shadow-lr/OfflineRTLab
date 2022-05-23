@@ -11,7 +11,7 @@ namespace shape::model
 {
 	mesh_triangle::mesh_triangle(const std::string& filename, shared_ptr<material> ptr, vec3 translate, vec3 scale)
 	{
-//		load_obj(filename, ptr, translate, scale);
+		//load_obj(filename, ptr, translate, scale);
 		load_tiny_obj(filename, ptr, translate, scale);
 	}
 
@@ -204,7 +204,7 @@ namespace shape::model
 
 		std::cout << "success load obj : " << path.c_str() << "\n";
 
-		bvh_tree = bvh_node(list, 0, 0, bvh_node::SplitMethod::SAH);
+		bvh_tree = bvh_node(list, 0, 0, bvh_node::SplitMethod::NAIVE);
 	}
 }
 

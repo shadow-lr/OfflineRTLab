@@ -9,6 +9,7 @@ public:
 	static scene cornell_box();
 	static scene test_scene();
 	static scene test_ball();
+	static scene dragon();
 	static scene dark1();
 	static scene shape_show();
 	static scene skybox_show();

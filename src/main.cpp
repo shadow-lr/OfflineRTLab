@@ -5,7 +5,7 @@ int main()
 {
 	RTLab lab;
 
-	lab.reset_scene(scene_list::test_ball());
-	lab.set_output_name("dark1_hdr_skybox_test.png");
+	lab.reset_scene(scene_list::dragon());
+	lab.set_output_name("oren-nayer-test-real-0.png");
 	lab.Render();
 }
