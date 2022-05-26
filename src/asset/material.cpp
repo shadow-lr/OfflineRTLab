@@ -1,7 +1,5 @@
 #include "asset/material.h"
 
-#include <ranges>
-
 // Diffuse reflection
 bool lambertian::scatter(const ray& r_in, const hit_record& rec, scatter_record& srec) const
 {
@@ -57,7 +55,15 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 	return true;
 }
 
-double oren_nayar::scattering_pdf(const ray& r_in, const hit_record& rec, const ray& scattered) const
+bool oren_nayar::scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const
+{
+	srec.is_specular = false;
+	srec.attenuation = albedo->value(rec.u, rec.v, rec.p);
+	srec.pdf_ptr = make_shared<cosine_pdf>(rec.normal);
+	return true;
+}
+
+double oren_nayar::scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const
 {
 	vec3 wi = normalize(r_in.direction());
 	vec3 wo = normalize(scattered.direction());
@@ -94,7 +100,6 @@ double oren_nayar::scattering_pdf(const ray& r_in, const hit_record& rec, const 
 	return ((a + b * maxCos * sinAlpha * tanBeta) * INV_PI * cosine);
 }
 
-
 bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const
 {
 	srec.is_specular = false;
@@ -103,42 +108,23 @@ bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scat
 	return true;
 }
 
-double microfacet_reflection::scattering_pdf(const ray& r_in, const hit_record& rec, const ray& scattered) const
+double microfacet_reflection::scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const
 {
 	const vec3 wi = normalize(r_in.direction());
 	const vec3 wo = normalize(scattered.direction());
-	//double Ndotwo = dot(rec.normal, wo);
-	//double Ndotwi = dot(rec.normal, wi);
-	//if (Ndotwo * Ndotwi <= 0)
-	//	return 0;
-	//else
-	//{
-	//	const vec3 wh = normalize(wi + wo);
-	//	double F = schlick_fresnel(Ndotwo, ior);
-	//	double G = distribution->G(wo, wi);
-	//	double D = distribution->D(wh);
+	double Ndotwo = dot(rec.normal, wo);
+	double Ndotwi = dot(rec.normal, wi);
 
-	//	printf("D = %f F = %f G = %f\n", D, F, G);
-	//	return D * F * G / (4 * Ndotwo * Ndotwi);
-	//}
+	if (Ndotwo * Ndotwi <= 0)
+		return 0;
+	else
+	{
+		const vec3 wh = normalize(wi + wo);
+		double F = schlick_fresnel(Ndotwo, ior);
+		double G = distribution->G(wo, wi);
+		double D = distribution->D(wh);
 
-	double cosThetaO = AbsCosTheta(wo);
-	double cosThetaI = AbsCosTheta(wi);
-	vec3 wh = wi + wo;
-	if (cosThetaI == 0 || cosThetaO == 0) {
-		return 0.0;
+		printf("D = %f F = %f G = %f\n", D, F, G);
+		return D * F * G / (4 * Ndotwo * Ndotwi);
 	}
-	if (wh.x() == 0 && wh.y() == 0 && wh.z() == 0) {
-		return 0.0;
-	}
-	wh = normalize(wh);
-	double cosine = dot(wh, wo);
-	if (cosine < 0) {
-		cosine = 0;
-	}
-	double F = schlick_fresnel(dot(wi, wh), ior);
-	double G = distribution->G(wo, wi);
-	double D = distribution->D(wh);
-	return  F * G * D / (4 * cosThetaI * cosThetaO) * cosine;
 }
-

@@ -128,15 +128,9 @@ public:
 		b = 0.45 * sigma2 / (sigma2 + 0.09);
 	}
 
-	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override
-	{
-		srec.is_specular = false;
-		srec.attenuation = albedo->value(rec.u, rec.v, rec.p);
-		srec.pdf_ptr = make_shared<cosine_pdf>(rec.normal);
-		return true;
-	}
+	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
 
-	double scattering_pdf(const ray& r_in, const hit_record& rec, const ray& scattered) const override;
+	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override;
 public:
 	shared_ptr<texture> albedo;
 	double a, b;
@@ -161,4 +155,3 @@ public:
 	shared_ptr<microfacet_distribution> distribution;
 	double ior;
 };
-
