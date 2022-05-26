@@ -143,7 +143,45 @@ scene scene_list::test_ball()
 	window_extent extent(800, aspect_ratio);
 
 	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
-//	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/sunset.hdr"));
+
+	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
+}
+
+scene scene_list::material_sphere()
+{
+	// todo: add five sphere to test oren-nayar reflectance model
+	hittable_list objects, lights;
+
+	auto baseAlbedo = color(0.867, 0.7, 0.545);
+
+	auto grey = make_shared<lambertian>(baseAlbedo);
+	auto oren_nayar_0 = make_shared<oren_nayar>(baseAlbedo, 0.0);
+	auto oren_nayar_0_2 = make_shared<oren_nayar>(baseAlbedo, 2.0);
+	auto oren_nayar_0_5 = make_shared<oren_nayar>(baseAlbedo, 5.0);
+	auto oren_nayar_1 = make_shared<oren_nayar>(baseAlbedo, 10.0);
+
+	objects.add(make_shared<sphere>(point3(-3.0, 0, 0), 0.5, grey));
+	objects.add(make_shared<sphere>(point3(-1.5, 0, 0), 0.5, oren_nayar_0));
+	objects.add(make_shared<sphere>(point3(0, 0, 0), 0.5, oren_nayar_0_2));
+	objects.add(make_shared<sphere>(point3(1.5, 0, 0), 0.5, oren_nayar_0_5));
+	objects.add(make_shared<sphere>(point3(3.0, 0, 0), 0.5, oren_nayar_1));
+
+	objects.add(make_shared<xz_rect>(-4.5, 4.5, -2, 2, -0.5, make_shared<lambertian>(color(0.8, 0.8, 0.8))));
+
+//	auto baseColor = vec3(1.0);
+//	auto light = make_shared<diffuse_light>(baseColor * color(3, 3, 3));
+//	objects.add(make_shared<flip_face>(make_shared<xz_rect>(-10, 10, -10, 10, 30, light)));
+
+	lights.add(make_shared<xz_rect>(-10, 10, -10, 10, 5, shared_ptr<material>()));
+
+	double aspect_ratio = 16.0 / 9.0;
+	camera cam;
+	cam.reset(vec3(0, 1.24, -3.8), vec3(0, 0, 0), vec3(0, 1, 0), 60.0, aspect_ratio, 0.0, 20.0);
+	window_extent extent(3540, aspect_ratio);
+
+//	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>();
+	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/peppermint_powerplant_4k.hdr"));
+
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }

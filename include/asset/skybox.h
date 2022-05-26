@@ -19,7 +19,7 @@ public:
 class constant_skybox : public skybox
 {
 public:
-	constant_skybox(const color &c) : backgroundColor(c) {}
+	constant_skybox(color c = color(0, 0, 0)) : backgroundColor(c) {}
 	vec3 getBackgroundColor(const ray &r_in) const override
 	{
 		return backgroundColor;

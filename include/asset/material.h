@@ -128,50 +128,9 @@ public:
 		b = 0.45 * sigma2 / (sigma2 + 0.09);
 	}
 
-	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override
-	{
-		srec.is_specular = false;
-		srec.attenuation = albedo->value(rec.u, rec.v, rec.p);
-		srec.pdf_ptr = make_shared<cosine_pdf>(rec.normal);
-		return true;
-	}
+	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
 
-	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override
-	{
-		vec3 wi = normalize(r_in.direction());
-		vec3 wo = normalize(scattered.direction());
-
-		double cosine = dot(rec.normal, wo);
-		if (cosine < 0)
-			cosine = 0;
-
-		double sinThetaI = SinTheta(wi);
-		double sinThetaO = SinTheta(wo);
-
-		double maxCos = 0;
-		if (sinThetaI > 1e-4 && sinThetaO > 1e-4)
-		{
-			double sinPhiI = SinPhi(wi);
-			double cosPhiI = CosPhi(wi);
-			double sinPhiO = SinPhi(wo);
-			double cosPhiO = CosPhi(wo);
-			double dCos = cosPhiI * cosPhiO + sinPhiI * sinPhiO;
-			maxCos = std::max(0.0, dCos);
-		}
-		double sinAlpha, tanBeta;
-		if (AbsCosTheta(wi) > AbsCosTheta(wo))
-		{
-			sinAlpha = sinThetaO;
-			tanBeta = sinThetaI / AbsCosTheta(wi);
-		}
-		else
-		{
-			sinAlpha = sinThetaI;
-			tanBeta = sinThetaO / AbsCosTheta(wo);
-		}
-
-		return ((a + b * maxCos * sinAlpha * tanBeta) * INV_PI * cosine);
-	}
+	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override;
 public:
 	shared_ptr<texture> albedo;
 	double a, b;
@@ -182,11 +141,11 @@ class microfacet_reflection : public material
 public:
 	microfacet_reflection(const shared_ptr<texture> &albedo,
 						  const shared_ptr<microfacet_distribution> &distribution,
-						  double ior);
+						  double ior) : albedo(albedo), distribution(distribution), ior(ior) { }
 
 	microfacet_reflection(color c,
 						  const shared_ptr<microfacet_distribution> &distribution,
-						  double ior);
+						  double ior) : albedo(make_shared<solid_color>(c)), distribution(distribution), ior(ior) { }
 
 	bool scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const override;
 	double scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const override;
