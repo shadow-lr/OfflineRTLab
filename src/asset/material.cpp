@@ -1,5 +1,7 @@
 #include "asset/material.h"
 
+#include <ranges>
+
 // Diffuse reflection
 bool lambertian::scatter(const ray& r_in, const hit_record& rec, scatter_record& srec) const
 {
@@ -55,19 +57,43 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, scatter_record&
 	return true;
 }
 
-microfacet_reflection::microfacet_reflection(const shared_ptr<texture> &albedo,
-											 const shared_ptr<microfacet_distribution> &distribution,
-											 double ior) : albedo(albedo), distribution(distribution), ior(ior)
+double oren_nayar::scattering_pdf(const ray& r_in, const hit_record& rec, const ray& scattered) const
 {
+	vec3 wi = normalize(r_in.direction());
+	vec3 wo = normalize(scattered.direction());
 
+	double cosine = dot(rec.normal, wo);
+	if (cosine < 0)
+		cosine = 0;
+
+	double sinThetaI = SinTheta(wi);
+	double sinThetaO = SinTheta(wo);
+
+	double maxCos = 0;
+	if (sinThetaI > 1e-4 && sinThetaO > 1e-4)
+	{
+		double sinPhiI = SinPhi(wi);
+		double cosPhiI = CosPhi(wi);
+		double sinPhiO = SinPhi(wo);
+		double cosPhiO = CosPhi(wo);
+		double dCos = cosPhiI * cosPhiO + sinPhiI * sinPhiO;
+		maxCos = std::max(0.0, dCos);
+	}
+	double sinAlpha, tanBeta;
+	if (AbsCosTheta(wi) > AbsCosTheta(wo))
+	{
+		sinAlpha = sinThetaO;
+		tanBeta = sinThetaI / AbsCosTheta(wi);
+	}
+	else
+	{
+		sinAlpha = sinThetaI;
+		tanBeta = sinThetaO / AbsCosTheta(wo);
+	}
+
+	return ((a + b * maxCos * sinAlpha * tanBeta) * INV_PI * cosine);
 }
 
-microfacet_reflection::microfacet_reflection(color c,
-											 const shared_ptr<microfacet_distribution> &distribution,
-											 double ior) : albedo(make_shared<solid_color>(c)), distribution(distribution), ior(ior)
-{
-
-}
 
 bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scatter_record &srec) const
 {
@@ -77,23 +103,42 @@ bool microfacet_reflection::scatter(const ray &r_in, const hit_record &rec, scat
 	return true;
 }
 
-double microfacet_reflection::scattering_pdf(const ray &r_in, const hit_record &rec, const ray &scattered) const
+double microfacet_reflection::scattering_pdf(const ray& r_in, const hit_record& rec, const ray& scattered) const
 {
 	const vec3 wi = normalize(r_in.direction());
 	const vec3 wo = normalize(scattered.direction());
-	double Ndotwo = dot(rec.normal, wo);
-	double Ndotwi = dot(rec.normal, wi);
-	if (Ndotwo * Ndotwi <= 0)
-		return 0;
-	else
-	{
-		const vec3 wh = normalize(wi + wo);
-		double F = schlick_fresnel(Ndotwo, ior);
-		double G = distribution->G(wo, wi);
-		double D = distribution->D(wh);
+	//double Ndotwo = dot(rec.normal, wo);
+	//double Ndotwi = dot(rec.normal, wi);
+	//if (Ndotwo * Ndotwi <= 0)
+	//	return 0;
+	//else
+	//{
+	//	const vec3 wh = normalize(wi + wo);
+	//	double F = schlick_fresnel(Ndotwo, ior);
+	//	double G = distribution->G(wo, wi);
+	//	double D = distribution->D(wh);
 
-		printf("D = %f F = %f G = %f\n", D, F, G);
-		return D * F * G / (4 * Ndotwo * Ndotwi);
+	//	printf("D = %f F = %f G = %f\n", D, F, G);
+	//	return D * F * G / (4 * Ndotwo * Ndotwi);
+	//}
+
+	double cosThetaO = AbsCosTheta(wo);
+	double cosThetaI = AbsCosTheta(wi);
+	vec3 wh = wi + wo;
+	if (cosThetaI == 0 || cosThetaO == 0) {
+		return 0.0;
 	}
+	if (wh.x() == 0 && wh.y() == 0 && wh.z() == 0) {
+		return 0.0;
+	}
+	wh = normalize(wh);
+	double cosine = dot(wh, wo);
+	if (cosine < 0) {
+		cosine = 0;
+	}
+	double F = schlick_fresnel(dot(wi, wh), ior);
+	double G = distribution->G(wo, wi);
+	double D = distribution->D(wh);
+	return  F * G * D / (4 * cosThetaI * cosThetaO) * cosine;
 }
 

@@ -16,6 +16,7 @@ public:
 
 	virtual double D(const vec3 &wh) const = 0;
 	virtual double lambda(const vec3 &w) const = 0;
+	double get_alpha() const;
 	double G1(const vec3& w) const
 	{
 		return (1 / (1 + lambda(w)));
@@ -33,11 +34,39 @@ class beckmann_distribution : public microfacet_distribution
 {
 public:
 	beckmann_distribution(double alpha_x, double alpha_y) : alphax(alpha_x), alphay(alpha_y) {}
+	
 
 	double D(const vec3 &wh) const override
 	{
-
+		double tan2Theta = Tan2Theta(wh);
+		if (std::isinf(tan2Theta)) {
+			return(0.0);
+		}
+		double cos4Theta = Cos2Theta(wh) * Cos2Theta(wh);
+		return(std::exp(-tan2Theta * (Cos2Phi(wh) / (alphax * alphax) +
+			Sin2Phi(wh) / (alphay * alphay))) / (PI * alphax * alphay * cos4Theta));
 	}
+
+	double lambda(const vec3& w) const override
+	{
+		double absTanTheta = std::abs(TanTheta(w));
+		if (std::isinf(absTanTheta)) {
+			return(0.0);
+		}
+		double alpha = std::sqrt(Cos2Phi(w) * alphax * alphax + Sin2Phi(w) * alphay * alphay);
+		double a = 1 / (alpha * absTanTheta);
+		if (a >= 1.6f) {
+			return(0.0);
+		}
+		return((1 - 1.259f * a + 0.396f * a * a) / (3.535f * a + 2.181f * a * a));
+	}
+
+	double get_alpha() const
+	{
+		return std::sqrt(alphax * alphax + alphay * alphay);
+	}
+	
+
 protected:
 	const double alphax, alphay;
 };
@@ -66,6 +95,11 @@ public:
 		double alpha = std::sqrt(Cos2Phi(w) * alphax * alphax + Sin2Phi(w) * alphay * alphay);
 		double alpha2Tan2Theta = (alpha * absTanTheta) * (alpha * absTanTheta);
 		return((-1 + std::sqrt(1.0f + alpha2Tan2Theta)) / 2);
+	}
+
+	double get_alpha() const
+	{
+		return std::sqrt(alphax * alphax + alphay * alphay);
 	}
 
 protected:

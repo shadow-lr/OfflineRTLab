@@ -1,10 +1,10 @@
 #include "RTLab.h"
 
-color RTLab::ray_color(const ray &r,
-					   const skybox& env_skybox,
-					   const object &world,
-					   const object &lights,
-					   int depth)
+color RTLab::ray_color(const ray& r,
+	const skybox& env_skybox,
+	const object& world,
+	const object& lights,
+	int depth)
 {
 	hit_record rec;
 
@@ -32,7 +32,7 @@ color RTLab::ray_color(const ray &r,
 
 	auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
 	mixture_pdf p(light_ptr, srec.pdf_ptr);
-//	cosine_pdf p(rec.normal);
+	//	cosine_pdf p(rec.normal);
 
 	ray scattered = ray(rec.p, p.generate(), r.time());
 	auto pdf_val = p.value(scattered.direction());
@@ -67,7 +67,7 @@ void RTLab::scan_calculate_color(int height, int width)
 
 void RTLab::Render()
 {
-	auto &extent = GetExtent();
+	auto& extent = GetExtent();
 
 	resize_table();
 
@@ -81,14 +81,14 @@ void RTLab::Render()
 	// time interval to update the progress
 	float time_interval = 0.5;
 
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int j = extent.height - 1; j >= 0; --j)
 	{
 		for (int i = 0; i < extent.width; ++i)
 		{
 			scan_calculate_color(j, i);
 
-			#pragma omp critical
+#pragma omp critical
 			{
 				finish_num += 1;
 
@@ -144,7 +144,7 @@ void RTLab::resize_table()
 {
 	auto& extent = GetExtent();
 	color_table.resize(extent.height + 1);
-	for (auto &tab : color_table)
+	for (auto& tab : color_table)
 		tab.resize(extent.width + 1);
 
 	color_table_raw.resize(extent.width * extent.height);
@@ -152,7 +152,7 @@ void RTLab::resize_table()
 
 void RTLab::output2file()
 {
-	auto &extent = GetExtent();
+	auto& extent = GetExtent();
 
 	std::ofstream filestream(output_name.c_str());
 

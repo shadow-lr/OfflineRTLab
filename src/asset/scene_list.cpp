@@ -152,7 +152,10 @@ scene scene_list::dragon()
 {
 	hittable_list objects, lights;
 
-	auto grey = make_shared<oren_nayar>(color(.8, .8, .8), 20.0);
+	auto grey = make_shared<oren_nayar>(color(0.392, 0.357, 0.31), 10.0);
+	//auto grey = make_shared<microfacet_reflection>(color(0.392, 0.357, 0.31), make_shared<trowbridge_reitz_distribution>(1, 1), 1);
+	//auto grey = make_shared<lambertian>(color(.8, .8, .8));
+	//auto grey = make_shared<lambertian>(color(0.392, 0.357, 0.31));
 
 	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh000.obj", grey));
 	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh001.obj", grey));
@@ -172,7 +175,7 @@ scene scene_list::dragon()
 	objects.add(make_shared<mesh_triangle>("assets/models/dragon/Mesh015.obj", grey));
 
 	auto baseColor = vec3(1.0);
-	auto light = make_shared<diffuse_light>(baseColor * color(15, 15, 15));
+	auto light = make_shared<diffuse_light>(baseColor * color(6, 6, 6));
 
 	objects.add(make_shared<flip_face>(make_shared<xz_rect>(-7.3, 2.5, -8.05, 1.57, 25, light)));
 
@@ -185,7 +188,8 @@ scene scene_list::dragon()
 
 	window_extent extent(1620, aspect_ratio);
 
-	std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
+	//std::unique_ptr<skybox> env_skybox = std::make_unique<constant_skybox>(color(0, 0, 0));
+	std::unique_ptr<skybox> env_skybox = std::make_unique<hdr_skybox>(make_shared<hdr_texture>("assets/HDRs/peppermint_powerplant_4k.hdr"));
 
 	return scene(std::move(objects), std::move(lights), std::move(cam), std::move(extent), std::move(env_skybox));
 }
