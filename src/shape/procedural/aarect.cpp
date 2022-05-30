@@ -25,6 +25,7 @@ namespace shape::procedural
 		rec.set_face_normal(r, outward_normal);
 		rec.mat_ptr = mp.get();
 		rec.p = r.at(t);
+		rec.p[2] = k;
 		return true;
 	}
 
@@ -54,6 +55,7 @@ namespace shape::procedural
 		rec.set_face_normal(r, outward_normal);
 		rec.mat_ptr = mp.get();
 		rec.p = r.at(t);
+		rec.p[1] = k;
 		return true;
 	}
 
@@ -101,6 +103,7 @@ namespace shape::procedural
 		rec.set_face_normal(r, outward_normal);
 		rec.mat_ptr = mp.get();
 		rec.p = r.at(t);
+		rec.p[0] = k;
 		return true;
 	}
 
